@@ -1,0 +1,19 @@
+{% extends "partials/main.html" %}
+{% block title %}
+  Livestock auction
+{% endblock %}
+
+{% block content %}
+  <div class="nav nav-default">
+    <a href="/trader/login">Trader Login</a>
+    <a href="/veterinary/login">Veterinary officer</a>
+  </div>
+<div class="row about_system">
+
+  <h3 id="sys_head">Take control of your livestock through record maintenance</h3>
+  <p id="sys_text">The system helps keep track of your livestock treatment history and disease diagnosis history,
+    you also find out about what you buy from others since every livestock information is found here</p>
+  <center> <a class="btn btn-success" href="/trader/signup">Get Started</a> </center>
+</div>
+{% include "partials/footer.html"  %}
+{% endblock %}

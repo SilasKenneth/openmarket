@@ -1,0 +1,18 @@
+{% extends "partials/main.html" %}
+{% block title %}
+
+{% endblock %}
+{% block content %}
+<h1> {{ animal.tag }} </h1>
+<ol class="list-group">
+    {% for medic in medications %}
+      <li class="list-group-item"> {{ medic.name }}</li>
+    {% endfor %}
+</ol>
+
+<ol class="list-group">
+    {% for disease in diagnosis %}
+      <li class="list-group-item"> {{ disease.diseases.name }}</li>
+    {% endfor %}
+</ol>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "partials/main.html" %}
+{% block content %}
+<div class="col-md-6 col-md-offset-3">
+  <form method="post">
+      <table class="table">
+          <tr>
+              <td><input type="text" placeholder="Animal owner" class="form-control" value="{{ live.traders.name}}"></td><td><a class="btn btn-md btn-info" href="/traders/{{ live.traders.id }}">view</a></td>
+          </tr>
+      </table>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "partials/main.html" %}
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+<h1>{{ livestock.tag }} </h1>
+<div class="container">
+<h3>A basic demo of Bootstrap Tabs</h3>
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs" role="tablist">
+  <li class="active"><a href="#hometab" role="tab" data-toggle="tab">Medications ({{ livestock.medications | length  }})</a></li>
+  <li><a href="#javatab" role="tab" data-toggle="tab">Diseases</a></li>
+  <li><a href="#csharptab" role="tab" data-toggle="tab">Owner</a></li>
+
+</ul>
+</li>
+
+<!-- Tab panes -->
+<div class="tab-content">
+  <div class="tab-pane active" id="hometab">
+      <table class="table table-stripped">
+          <thead>
+             <tr>
+                 <th>Reference #</th>
+                 <th>Name</th>
+                 <th>Disease For</th>
+             </tr>
+          </thead>
+          <tbody>
+            {% if livestock.medications != None %}
+              {% for medication in livestock.medications %}
+                <tr>
+                    <td>{{ medication.id }}</td>
+                    <td>{{ medication.name }}</td>
+                    <td> {{ medication.diseases.name }}</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+
+            {% endif %}
+          </tbody>
+      </table>
+  </div>
+  <div class="tab-pane" id="javatab">The Java is an object-oriented programming language <br /> that was developed by James Gosling from the Sun Microsystems in 1995.</div>
+  <div class="tab-pane" id="csharptab">C# is also a programming language</div>
+  <div class="tab-pane" id="mysqltab">MySQL is a databased mostly used for web applications.</div>
+  <div class="tab-pane" id="jquerytab">jQuery content here</div>
+
+</div>
+
+{% endblock %}

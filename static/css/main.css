@@ -1,0 +1,12 @@
+.theme{
+  background:whitesmoke;
+  padding:20px;
+}
+
+body{
+  /* background: url("/static/bg.jpg"); */
+  background-size: cover;
+}
+.form-center{
+  margin-top: 15vh;
+}

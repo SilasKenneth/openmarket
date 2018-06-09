@@ -1,0 +1,51 @@
+{% extends "partials/main.html" %}
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+<div class="theme col-md-4 form-center col-sm-12 col-md-offset-4">
+<form method="post" action="/trader/signup">
+    <center><h3 class="form-header">
+        Sign up
+    </h3>
+    </center>
+    <hr>
+    <div class="form-container">
+        <p class="form-group">
+            <input type="text" name="name" class="form-control" placeholder="Name" value="{{ old['name'] }}">
+        </p>
+        <p class="form-group">
+        <select class="form-control" prefix="Aria" name="county">
+            <option>Select your county</option>
+            {% for county in counties %}
+              <option value="{{ county['id'] }}"> {{ county['name'] }}</option>
+            {% endfor %}
+        </select>
+        </p>
+        <p class="form-group">
+            <input type="number" name="idnum" class="form-control" placeholder="Passport / ID" min="10000000" max="99999999" value="{{ old['idnum'] }}">
+        </p>
+         <p class="form-group">
+            <input type="tel" name="phone" class="form-control" placeholder="Phone no." value="{{ old['phone'] }}">
+        </p>
+        <p class="form-group">
+            <input type="email" name="email" class="form-control" placeholder="Email address" value="{{ old['email'] }}">
+        </p>
+        <p class="form-group">
+            <input type="password" name="password" class="form-control" placeholder="Password" value="{{ old['password'] }}">
+        </p>
+        <p class="form-group">
+            <input type="password" name="confirm_password" class="form-control" placeholder="Confirm password" value="{{ old['confirm_password'] }}">
+        </p>
+        <br>
+        <button type="submit" class="btn btn-success btn-block">Create account</button>
+        <div class="clearfix"></div>
+      <hr>
+      <center><p>Have an account? <a href="/trader/login">Log in</a></p> </center>
+    </div>
+</form>
+</div>
+<div class="clearfix"></div>
+<div> {% include "partials/footer.html" %} </div>
+{% endblock %}

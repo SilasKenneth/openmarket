@@ -1,0 +1,24 @@
+{% extends "partials/main.html" %}
+{% block title %}
+  Login
+{% endblock %}
+{% block content %}
+<div class="theme col-md-4 form-center col-sm-12 col-md-offset-4">
+  <form method="POST">
+      <h3>
+          Trader Login
+      </h3>
+      <br><br>
+      <p class="form-group">
+          <input type="text" name="email_username" class="form-control" placeholder="Email/ username" value="{{ old['username'] }}">
+      </p>
+      <p class="form-group">
+          <input type="password" name="pass" class="form-control" placeholder="Password" value="{{ old['password'] }}" >
+      </p>
+      <button type="submit" name="login" value="yes" class="btn btn-primary btn-block">Sign in</button>
+      <div class="clearfix"></div>
+      <hr>
+      <center><p>Don't have an account? <a href="/trader/signup">Sign up</a></p> </center>
+  </form>
+</div>
+{% endblock %}
