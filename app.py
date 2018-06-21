@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, flash, jsonify, session, url_for
 from collections import OrderedDict
 
-from language_support_pkgs import packagekit_what_provides_locale
+# from language_support_pkgs import packagekit_what_provides_locale
 from passlib.apps import custom_app_context as pwd_context
 from model import *
 import random
