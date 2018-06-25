@@ -12,7 +12,6 @@ errors_signup = {
     "name": "Name cannot be empty"
 }
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
-
 def any_empty(fields):
     sign_up_error = []
     for field in fields:
