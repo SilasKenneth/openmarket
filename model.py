@@ -8,6 +8,22 @@ metadata = MetaData()
 db_session = scoped_session(sessionmaker(autocommit=False,autoflush=False,bind=engine))
 Base = declarative_base()
 Base.query = db_session.query_property()
+class Admin(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    email = Column(String(50), unique=True, nullable=False)
+    username = Column(String(50), unique=True, nullable=False)
+    password = Column(String(80), nullable=False)
+    profile_pic = Column(String(50), nullable=False, default="/static/profiles/profile.png")
+    def __init__(self, email, username,password,profile_pic):
+        self.email = email
+        self.username = username
+        self.password = password
+        self.profile_pic = profile_pic
+    def hash_password(self, password):
+        self.password = pwd_context.encrypt(password)
+    def verify_password(self, password):
+        return pwd_context.verify(self.password, password)
 class Trader(Base):
     __tablename__ = 'traders'
     id = Column(Integer, primary_key=True)
@@ -19,7 +35,7 @@ class Trader(Base):
     county = Column(Integer)
     password = Column(String(128), nullable=False)
     livestocks = relationship("Livestock", back_populates="traders")
-    profile_pic = Column(String(250), nullable=False,default="profiles/nopic.jpg")
+    profile_pic = Column(String(250), nullable=False,default="/static/profiles/profile.jpg")
     def __init__(self, name=None, email=None, county=1, id_pass=None, phone=None, password = None):
         self.name = name 
         self.email = email
@@ -97,5 +113,5 @@ def init_db():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
-# init_db()
+#init_db()
 

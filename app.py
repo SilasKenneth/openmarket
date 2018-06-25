@@ -83,7 +83,23 @@ def trader_changepass():
         return render_template("traders/changepass.html")
 
 
-@app.route("/admin/login", methods=['POST', 'GET'])
+
+
+@app.route("/admin")
+@app.route("/admin/")
+def admin_index():
+    if 'user' in session:
+        if 'user_type' in session:
+            if session['user_type'] != 'admin':
+                return redirect(url_for("admin_login"))
+            else:
+                return render_template("admin/home.html", user=session['user'])
+        else:
+            return redirect(url_for("admin_login"))
+    else:
+        return redirect(url_for('admin_login'))
+@app.route("/admin/login/", methods=['POST', 'GET'])
+@app.route("/admin/login/", methods=['POST', 'GET'])
 def admin_login():
     old = OrderedDict()
     old['username'] = ""
@@ -93,10 +109,12 @@ def admin_login():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
-    if password.strip() != "":
-        old['password'] = password
-    if username.strip() != "":
-        old['username'] = username
+        if password.strip() != "" and username.strip() != "":
+            old['password'] = password
+            old['username'] = username
+        else:
+            error_empty = "Please specify a username and a password!"
+            return render_template("admin/login.html", error=error_empty)
     return render_template("admin/login.html", old=old)
 
 

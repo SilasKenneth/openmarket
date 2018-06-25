@@ -6,12 +6,13 @@
 {% include "partials/header.html" %}
 <div class="theme col-md-4 form-center col-sm-12 col-md-offset-4">
   <form method="POST">
+      <center><h3>Admin Login</h3></center>
       <br><br>
       <p class="form-group">
-          <input type="text" name="email_username" class="form-control" placeholder="Email/ username" value="{{ old['username'] }}">
+          <input type="text" name="username" class="form-control" placeholder="Email/ username" value="{% if old %} {{ old['username'] }} {% endif %}">
       </p>
       <p class="form-group">
-          <input type="password" name="pass" class="form-control" placeholder="Password" value="{{ old['password'] }}" >
+          <input type="password" name="password" class="form-control" placeholder="Password" value="{% if old %} {{ old['password'] }} {% endif %}" >
       </p>
       <button type="submit" name="login" value="yes" class="btn btn-primary btn-block">Sign in</button>
       <div class="clearfix"></div>
