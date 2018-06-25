@@ -15,6 +15,7 @@ class Trader(Base):
     name = Column(String(50),unique=True)
     email = Column(String(150),unique=True)
     phone = Column(String(60), unique=True)
+    bio = Column(String(500), nullable=False, default="No bio availbale")
     county = Column(Integer)
     password = Column(String(128), nullable=False)
     livestocks = relationship("Livestock", back_populates="traders")
@@ -96,4 +97,4 @@ def init_db():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
-#init_db()
+init_db()

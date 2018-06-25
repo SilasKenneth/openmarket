@@ -2,15 +2,51 @@
 
 {% block content %}
 <style type="text/css">
-  #profile-pic{
+  .profile-pic{
      width:180px;
      height:180px;
      border-radius: 80%;
   }
 </style>
-   <div class="col-md-8 col-md-offset-2 thumbnail">
-       <div class="col-md-6 col-md-offset-3">
-           <img src="static/images/profile.jpg" alt="Profile Picture" class="profile-pic">
+   <div class="col-md-7 col-md-offset-2 thumbnail">
+       <div class="col-md-6 col-md-offset-4">
+           <img src="/static/images/profile.png" alt="Profile Picture" class="profile-pic">
+       </div>
+       <div class="clearfix"></div>
+       <hr>
+       <div class="col-md-7 col-md-offset-3">
+           <h3>{{ trader.name }}</h3>
+       </div>
+       <div class="clearfix"></div>
+       <br><br>
+       <div class="col-md-10 col-md-offset-1">
+           <table class="table">
+               <thead>
+                <tr>
+                    <th>County</th>
+                    <th>Phone Number</th>
+                    <th>Email address</th>
+                </tr>
+               </thead>
+               <tbody>
+                  <tr>
+                      <td>{{county.name}}</td>
+                      <td>{{trader.phone}}</td>
+                      <td>{{trader.email}}</td>
+                  </tr>
+               </tbody>
+           </table>
+           <br><br>
+           <div class="col-md-8 col-md-offset-0">
+               <h3>Bio</h3>
+               <p>{{trader.bio}}</p>
+           </div>
+           <div class="clearfix"></div>
+           <br><br>
+           <a href="/sendmessage/{{trader.id}}" class="btn btn-success btn-block">
+               Send message
+           </a>
+           <br><br>
        </div>
    </div>
 {% endblock %}

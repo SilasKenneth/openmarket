@@ -80,7 +80,8 @@ def view_trader(ids):
     trader = db_session.query(Trader).filter(Trader.id == ids).one_or_none()
     if trader == None:
         return render_template("traders/404.html")
-    return render_template("traders/profile.html", trader = trader)
+    county = db_session.query(County).filter(County.id == trader.county).one_or_none()
+    return render_template("traders/profile.html", trader = trader, county=county)
 #Livestock route
 @app.route("/livestocks/<int:ids>")
 def view_livestock(ids):
