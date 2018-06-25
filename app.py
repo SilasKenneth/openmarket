@@ -61,17 +61,45 @@ def trader_signup():
             old[sample[kk][0]] = request.form[sample[kk][0]]
         try:
             trader = Trader(request.form['name'],request.form['email'],request.form['county'],request.form['idnum'],request.form['phone']
-                            ,pwd_context.encrypt(request.form['password']))
+                            ,request.form['password'])
+
             db_session.add(trader)
             db_session.commit()
             session['user'] = trader.id
-            return redirect(url_for("index"))
+            return redirect(url_for("trader_login"))
         except Exception as ex:
             print(ex)
             db_session.rollback()
         return render_template("traders/new.html", errors = [] if len(any_empty(request.form)) == 0 else any_empty(request.form), old = old, counties=counties)
     else:
         return render_template("traders/new.html", old = old, counties=counties)
+@app.route("/trader/changepass")
+def trader_changepass():
+    if 'username' not in session:
+        return redirect("/trader/login")
+    if request.method == "POST":
+        pass
+    else:
+        return render_template("traders/changepass.html")
+
+
+@app.route("/admin/login", methods=['POST', 'GET'])
+def admin_login():
+    old = OrderedDict()
+    old['username'] = ""
+    old['password'] = ""
+    username = ""
+    password = ""
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+    if password.strip() != "":
+        old['password'] = password
+    if username.strip() != "":
+        old['username'] = username
+    return render_template("admin/login.html", old=old)
+
+
 @app.route("/trader")
 def trader_home():
     return render_template("traders/index.html")

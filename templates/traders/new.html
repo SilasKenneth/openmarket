@@ -4,7 +4,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="theme col-md-4 form-center col-sm-12 col-md-offset-4">
+{% include "partials/header.html" %}
+<div class="theme col-md-4 col-sm-12 col-md-offset-4">
 <form method="post" action="/trader/signup">
     <center><h3 class="form-header">
         Sign up
