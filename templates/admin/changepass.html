@@ -1,0 +1,16 @@
+{% extends "partials/main.html" %}
+{% block title %}
+     Change Password
+{% endblock %}
+{% block content %}
+{% include "partials/admin_logged_in.html" %}
+   <div class="col-md-4 col-md-offset-4">
+       <form method="post">
+           <input type="password" placeholder="Current password" name="currpass" class="form-control"/><br>
+           <input type="password" placeholder="New password" name="newp" class="form-control"/><br>
+           <input type="password" placeholder="Confirm new password" name="newpc" class="form-control"><br>
+           <hr>
+           <button class="btn btn-primary btn-block">Confirm change</button>
+       </form>
+   </div>
+{% endblock %}

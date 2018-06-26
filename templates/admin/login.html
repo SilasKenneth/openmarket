@@ -8,11 +8,14 @@
   <form method="POST">
       <center><h3>Admin Login</h3></center>
       <br><br>
+      {% if error %}
+      <p class="alert alert-danger">{{ error }}</p>
+      {% endif %}
       <p class="form-group">
-          <input type="text" name="username" class="form-control" placeholder="Email/ username" value="{% if old %} {{ old['username'] }} {% endif %}">
+          <input type="text" name="username" class="form-control" placeholder="Email/ username" value="{% if old %}{{ old['username'] }}{% endif %}">
       </p>
       <p class="form-group">
-          <input type="password" name="password" class="form-control" placeholder="Password" value="{% if old %} {{ old['password'] }} {% endif %}" >
+          <input type="password" name="password" class="form-control" placeholder="Password"  />
       </p>
       <button type="submit" name="login" value="yes" class="btn btn-primary btn-block">Sign in</button>
       <div class="clearfix"></div>
