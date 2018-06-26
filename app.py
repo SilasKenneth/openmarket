@@ -112,6 +112,13 @@ def admin_login():
         if password.strip() != "" and username.strip() != "":
             old['password'] = password
             old['username'] = username
+            creds = db_session.query(Admin).filter(Admin.username == username).one_or_none()
+            print(creds)
+            if creds == None:
+                error_wrong = "Wrong username or password"
+                return render_template("admin/login.html", error=error_wrong)
+            else:
+                return render_template("admin/login.html")
         else:
             error_empty = "Please specify a username and a password!"
             return render_template("admin/login.html", error=error_empty)
