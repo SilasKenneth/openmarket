@@ -172,6 +172,15 @@ def vet_new():
     if request.method == "POST":
         return render_template("veterinary/new.html")
     return render_template("veterinary/new.html")
+
+
+@app.route("/admin/vets", methods=['GET', 'POST'])
+@app.route("/admin/vets/", methods=['GET', 'POST'])
+def all_vets():
+    vets = db_session.query(Veterinary).all()
+    return render_template("/veterinary/all.html", officers=vets)
+
+
 @app.route("/admin/changepass", methods=['GET', 'POST'])
 @app.route("/admin/changepass/", methods=['GET', 'POST'])
 def admin_change_pass():

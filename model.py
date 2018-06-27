@@ -33,6 +33,29 @@ class Admin(Base):
         return pbkdf2_sha256.verify(password, self.password)
 
 
+class Veterinary(Base):
+    __tablename__ = "veterinaries"
+    id = Column(Integer, primary_key=True)
+    full_names = Column(String(150), nullable=False)
+    username = Column(String(25), nullable=False, unique=True)
+    password = Column(String(150), nullable=False)
+    email = Column(String(150), nullable=False, unique=True)
+    county = Column(Integer, ForeignKey("counties.id"))
+
+    def __init__(self, full_names, username, password, email, county):
+        self.full_names = full_names
+        self.username = username
+        self.password = password
+        self.email = email
+        self.county = county
+
+    def hash_password(self):
+        self.password = pbkdf2_sha256.hash(self.password)
+
+    def verify_password(self, password):
+        return pbkdf2_sha256.verify(self.password, password)
+
+
 class Trader(Base):
     __tablename__ = 'traders'
     id = Column(Integer, primary_key=True)
@@ -54,11 +77,11 @@ class Trader(Base):
         self.phone = phone
         self.password = password
 
-    def hash_password(self, password):
-        self.password = pwd_context.encrypt(password)
+    def hash_password(self):
+        self.password = pbkdf2_sha256.hash(self.password)
 
     def verify_password(self, password):
-        return pwd_context.verify(self.password, password)
+        return pbkdf2_sha256.verify(self.password, password)
 
 
 class Type(Base):

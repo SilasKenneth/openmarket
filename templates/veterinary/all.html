@@ -2,24 +2,32 @@
 {% block content %}
   {% include "partials/admin_logged_in.html" %}
   <div class="container">
-  	<div class="row"></div>
-  	<hr>
-  	<div class="row">
+	  <br>
+  	<div class="col-md-9 col-md-offset-1">
+		<div class="row">
+
+		</div>
+		<div class="clearfix"></div>
+		<a class="btn btn-success btn-sm pull-right" href="/admin/vet/add">Add new vet</a>
+		<div class="clearfix"></div>
+		<hr>
+	</div>
+  	<div class="col-md-9 col-md-offset-1">
   		<table class="table">
   			<thead>
   				<tr>
-  					<th>Name</th>
-  					<th>ID Number</th>
-  					<th>Licence Number</th>
+					<th>ID NO.</th>
+					<th>Name</th>
   					<th>County</th>
   					<th>Joined</th>
+					<th>Status</th>
   					<th>Actions</th>
   				</tr>
   			</thead>
   			<tbody>
   				{% for vet in vets %}
   				   
-  				{% endif %}
+  				{% endfor %}
   			</tbody>
   		</table>
   	</div>
