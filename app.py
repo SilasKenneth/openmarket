@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, redirect, flash, jsonify, ses
 from collections import OrderedDict
 
 # from language_support_pkgs import packagekit_what_provides_locale
-from passlib.apps import custom_app_context as pwd_context
 from model import *
 import random
 
@@ -16,7 +15,6 @@ app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 
 def any_empty(fields):
-    sign_up_error = []
     for field in fields:
         if fields[str(field).strip()].strip() == "":
             sign_up_error.append(field)
@@ -25,22 +23,11 @@ def any_empty(fields):
 
 @app.route("/")
 def index():
-    # alp = [chr(c) for c in range(65, 91)]
-    # for i in range(10000):
-    #     name = "".join([random.choice(alp) for x in range(40)])
-    #     email = "".join([random.choice(alp) for x in range(10)])
-    #     email += "@"
-    #     email += "".join([random.choice(alp) for x in range(10)])
-    #     email += "."
-    #     email += "".join([random.choice(alp) for x in range(3)])
-    #     user = User(name=name.lower(), email=email.lower())
-    #     db_session.add(user)
-    # db_session.commit()
-    users = None
-    return render_template("index.html", users=users)
+    return render_template("index.html")
 
 
 @app.route("/trader/login", methods=["POST", "GET"])
+@app.route("/trader/login/", methods=["POST", "GET"])
 def trader_login():
     old = OrderedDict()
     old['username'] = ""
@@ -58,6 +45,7 @@ def trader_login():
 
 
 @app.route("/trader/signup", methods=["POST", "GET"])
+@app.route("/trader/signup/", methods=["POST", "GET"])
 def trader_signup():
     counties = County.query.all()
     old = OrderedDict()
@@ -89,6 +77,7 @@ def trader_signup():
 
 
 @app.route("/trader/changepass")
+@app.route("/trader/changepass/")
 def trader_changepass():
     if 'username' not in session:
         return redirect("/trader/login")
@@ -145,8 +134,46 @@ def admin_prof():
         return redirect(url_for('admin_login'))
 
 
+@app.route("/admin/account/edit", methods=['POST', 'GET'])
+@app.route("/admin/account/edit/", methods=['POST', 'GET'])
+def admin_edit():
+    old = OrderedDict()
+    old['display_name'] = ''
+    old['password'] = ''
+    if 'user' not in session or session['user'] is None:
+        return redirect(url_for("admin_login"))
+    else:
+        if 'user_type' not in session:
+            return redirect(url_for("admin_login"))
+        else:
+            if session['user_type'] != 'admin':
+                return redirect(url_for("admin_login"))
+    if request.method == "POST":
+        email = request.form['email'].strip()
+        username = request.form['username'].strip()
+        old['display_name'] = username
+        old['email'] = email
+        if username == "" or email == "":
+            error_empty = "Please fill in all the fields"
+            return render_template("admin/edit.html", error=error_empty, user=old)
+        else:
+            session['user']['display_name'] = username
+            session['user']['email'] = email
+            return render_template("admin/edit.html", user=old)
+    else:
+        user = session['user']
+        return render_template("admin/edit.html", user=user)
+
+
+@app.route("/admin/vet/add")
+@app.route("/admin/vet/add/")
+def vet_new():
+    old = OrderedDict()
+    if request.method == "POST":
+        return render_template("veterinary/new.html")
+    return render_template("veterinary/new.html")
 @app.route("/admin/changepass", methods=['GET', 'POST'])
-@app.route("/admin/changepass", methods=['GET', 'POST'])
+@app.route("/admin/changepass/", methods=['GET', 'POST'])
 def admin_change_pass():
     if 'user' in session:
         if session['user'] is None:
@@ -176,7 +203,8 @@ def admin_login():
         if password.strip() != "" and username.strip() != "":
             old['password'] = password.strip()
             old['username'] = username.strip()
-            creds = db_session.query(Admin).filter((Admin.username == username) | (Admin.email == username)).one_or_none()
+            creds = db_session.query(Admin).filter(
+                (Admin.username == username) | (Admin.email == username)).one_or_none()
             if creds is None:
                 error_wrong = "Wrong username or password"
                 return render_template("admin/login.html", error=error_wrong, old=old)
@@ -200,14 +228,16 @@ def admin_login():
 
 
 @app.route("/trader")
+@app.route("/trader/")
 def trader_home():
     return render_template("traders/index.html")
 
 
 @app.route("/traders/<int:ids>")
+@app.route("/traders/<int:ids>/")
 def view_trader(ids):
     trader = db_session.query(Trader).filter(Trader.id == ids).one_or_none()
-    if trader == None:
+    if trader is None:
         return render_template("traders/404.html")
     county = db_session.query(County).filter(County.id == trader.county).one_or_none()
     return render_template("traders/profile.html", trader=trader, county=county)
@@ -215,33 +245,38 @@ def view_trader(ids):
 
 # Livestock route
 @app.route("/livestocks/<int:ids>")
+@app.route("/livestocks/<int:ids>/")
 def view_livestock(ids):
     live = db_session.query(Livestock).filter(Livestock.id == ids).one_or_none()
-    if live == None:
+    if live is None:
         return render_template("livestocks/404.html", animal=ids)
     return render_template("livestocks/profile.html", livestock=live)
 
 
 @app.route("/livestocks/<int:ids>/edit")
+@app.route("/livestocks/<int:ids>/edit/")
 def edit_livestock(ids):
     live = db_session.query(Livestock).filter(Livestock.id == ids).one_or_none()
-    if live == None:
+    if live is None:
         return render_template("livestocks/404.html")
     trader = live.traders
     return render_template("livestocks/edit.html", live=live, trader=trader)
 
 
 @app.route("/livestocks/<int:ids>/delete", methods=["POST", "GET"])
+@app.route("/livestocks/<int:ids>/delete/", methods=["POST", "GET"])
 def delete_livestock(ids):
     return render_template("livestocks/delete.html")
 
 
 @app.route("/livestocks/<int:ids>/photoupload", methods=["GET", "POST"])
+@app.route("/livestocks/<int:ids>/photoupload/", methods=["GET", "POST"])
 def livestock_photoupload(ids):
     return render_template("livestocks/photoupload.html")
 
 
 @app.route("/livestocks")
+@app.route("/livestocks/")
 def livestock_index():
     livestocks = db_session.query(Livestock).all()
     return render_template("livestocks/index.html", livestocks=livestocks)
@@ -250,21 +285,24 @@ def livestock_index():
 # Medications route
 
 @app.route("/livestocks/<int:ids>/medications", methods=["GET", "POST"])
+@app.route("/livestocks/<int:ids>/medications/", methods=["GET", "POST"])
 def medications(ids):
     animal = db_session.query(Livestock).filter(Livestock.id == ids).one_or_none()
-    if animal == None:
+    if animal is None:
         return render_template("livestocks/404.html")
-    medications = animal.medications
+    medication = animal.medications
     diseases = animal.diagnosis
-    return render_template("medications/index.html", animal=animal, medications=medications, diseases=diseases)
+    return render_template("medications/index.html", animal=animal, medications=medication, diseases=diseases)
 
 
 @app.route("/livestocks/<int:ids>/medications/new")
+@app.route("/livestocks/<int:ids>/medications/new/")
 def create_medication(ids):
     return render_template("medications/new.html")
 
 
 @app.route("/livestocks/<int:ids>/medications/<int:ids1>")
+@app.route("/livestocks/<int:ids>/medications/<int:ids1>/")
 def view_medication(ids, ids1):
     return render_template("medications/view.html")
 

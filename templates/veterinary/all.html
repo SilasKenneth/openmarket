@@ -1,0 +1,27 @@
+{% extends "partials/main.html" %}
+{% block content %}
+  {% include "partials/admin_logged_in.html" %}
+  <div class="container">
+  	<div class="row"></div>
+  	<hr>
+  	<div class="row">
+  		<table class="table">
+  			<thead>
+  				<tr>
+  					<th>Name</th>
+  					<th>ID Number</th>
+  					<th>Licence Number</th>
+  					<th>County</th>
+  					<th>Joined</th>
+  					<th>Actions</th>
+  				</tr>
+  			</thead>
+  			<tbody>
+  				{% for vet in vets %}
+  				   
+  				{% endif %}
+  			</tbody>
+  		</table>
+  	</div>
+  </div>
+{% endblock %}
