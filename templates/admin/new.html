@@ -1,0 +1,26 @@
+{% extends "partials/main.html" %}
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+   {% include "partials/admin_logged_in.html" %}
+   <div class="col-md-4 col-md-offset-4">
+   	<form method="post">
+   	  <div class="col-md-6 col-md-offset-3">
+   	  	<img src="/static/images/admin.png" width="150px" height="150px" />
+   	  </div>
+   	  <div class="clearfix"></div>
+   	   {% if error %}
+   	     <p class="alert alert-danger">{{error}}</p>
+   	   {% endif %}
+   	  <br>
+   	  <input type="text" placeholder="Full names" name="fullnames" class="form-control"  value="{% if old %}{{old['fullnames']}}{% endif %}" /><br>
+   	  <input type="email" placeholder="Email address" name="email" class="form-control" value="{% if old %}{{old['email']}}{% endif %}"  /><br>
+   	  <input type="text" placeholder="Username" name="username" class="form-control"  value="{% if old %}{{old['username']}}{% endif %}" /><br>
+   	  <input type="password" placeholder="Password" name="password" class="form-control" value="{% if old %}{{old['password']}}{% endif %}" /><br>
+   	  <input type="password" placeholder="Confirm password" name="confirmpass" class="form-control" value="{% if old %}{{old['confirmpass']}}{% endif %}" /><br>
+   	  <button type="submit" class="btn btn-primary btn-block">Save the boss</button>
+   	</form>
+   </div>
+{% endblock %}

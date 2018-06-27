@@ -5,7 +5,7 @@
 
 body{
   /* background: url("/static/bg.jpg"); */
-  background-size: cover;
+  background: url("/static/images/bg.png");
 }
 .form-center{
   margin-top: 15vh;

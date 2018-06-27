@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, flash, jsonify, session, url_for
 from collections import OrderedDict
-
+import babel.dates as dt
 # from language_support_pkgs import packagekit_what_provides_locale
 from model import *
 import random
@@ -12,6 +12,15 @@ errors_signup = {
     "name": "Name cannot be empty"
 }
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+
+
+def format_datetime(value):
+    print(type(value))
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    return str(value.day) + ","  + str(months[value.month - 1]) + " " + str(value.year) 
+
+
+app.jinja_env.filters['datetime'] = format_datetime
 
 
 def any_empty(fields):
@@ -32,7 +41,7 @@ def trader_login():
     old = OrderedDict()
     old['username'] = ""
     old['password'] = ""
-    print(pwd_context.encrypt("silas"))
+    # print(pwd_context.encrypt("silas"))
     if request.method == "POST":
         old['username'] = request.form['email_username']
         old['password'] = request.form['pass']
@@ -118,6 +127,56 @@ def admin_index():
     else:
         return redirect(url_for('admin_login'))
 
+@app.route("/admin/new", methods=['GET', 'POST'])
+@app.route("/admin/new/", methods=['GET', 'POST'])
+def admin_new():
+    old = OrderedDict()
+    old['username'] = ""
+    old['names'] = ""
+    old['email'] = ""
+    old['confirmpass'] = ""
+    old['password'] = ""
+    if 'user' in session:
+        if session['user'] is None:
+            return redirect(url_for("admin_login"))
+        else:
+            if session['user_type'] != 'admin':
+                return redirect(url_for('admin_login'))
+    else:
+        return redirect(url_for('admin_login'))
+    if request.method == "POST":
+        username = request.form['username'].strip()
+        email = request.form['email'].strip()
+        fullnames = request.form['fullnames'].strip()
+        password = request.form['password'].strip()
+        pass_c = request.form['confirmpass'].strip()
+        old['username'] = username
+        old['password'] = password
+        old['email'] = email
+        old['confirmpass'] = pass_c
+        old['fullnames'] = fullnames
+        if username == "" or email == '' or fullnames == '' or password == '' or pass_c == '':
+            error_empty = "Please fill up all the fields"
+            return render_template("admin/new.html", old=old)
+        else:
+            user = Admin(email, fullnames, username, password)
+            user.hash_password()
+            if not user.verify_password(pass_c):
+                error_no_match = "The two password do not match"
+                return render_template("admin/new.html", error=error_no_match)
+            try:
+                db_session.add(user)
+                db_session.commit()
+            except Exception as e:
+                print(e)
+                db_session.rollback()
+                error_something = "Something went wrong while adding the record. most possibly dublicates"
+                return render_template("admin/new.html", error=error_something)
+            return redirect("/admin")
+    else:
+        return render_template("admin/new.html", old=old)
+    
+
 
 @app.route("/admin/account", methods=['GET', 'POST'])
 @app.route("/admin/account", methods=['GET', 'POST'])
@@ -165,22 +224,119 @@ def admin_edit():
         return render_template("admin/edit.html", user=user)
 
 
-@app.route("/admin/vet/add")
-@app.route("/admin/vet/add/")
+@app.route("/admin/vet/add", methods=['POST', 'GET'])
+@app.route("/admin/vet/add/", methods=['POST', 'GET'])
 def vet_new():
     old = OrderedDict()
+    old['phone'] = ""
+    old['national_id'] = ""
+    old['fullnames'] = ""
+    old['email'] = ''
+    old['username'] = ''
+    old['county'] = ''
+    old['phone'] = ''
+    old['password'] = ''
+    old['confirmpass'] = ''
+    counties = db_session.query(County).all()
+    if 'user' not in session:
+        return redirect(url_for("admin_login"))
+    else:
+        if session['user'] is None:
+            return redirect(url_for('admin_login'))
+        else:
+            if 'user_type' not in session:
+                return redirect(url_for("admin_login"))
+            else:
+                if session['user_type'] != 'admin':
+                    return redirect(url_for("admin_login"))
     if request.method == "POST":
-        return render_template("veterinary/new.html")
-    return render_template("veterinary/new.html")
+        fullnames = request.form['fullnames'].strip()
+        email = request.form['email'].strip()
+        county = request.form['county'].strip()
+        national_id = request.form['national_id'].strip()
+        password = request.form['password'].strip()
+        confirmpass = request.form['confirmpass'].strip()
+        phone = request.form['phone'].strip()
+        old['fullnames'] = fullnames
+        old['email'] = email
+        old['password'] = password
+        old['confirmpass']  = confirmpass
+        old['national_id'] = national_id
+        old['phone'] = phone
+        if fullnames == '' or email == '' or national_id == '' or county == '' or phone == '' or password == '' or confirmpass == '':
+            error_empty = "All the details must be filled"
+            return render_template("veterinary/new.html", error=error_empty, old=old)
+        else:
+            username = str(email).split("@")[0]
+            user = Veterinary(fullnames, username, password, email, county, national_id, phone)
+            user.hash_password()
+            if not user.verify_password(confirmpass):
+                error_not = "The two passwords do not match"
+                return render_template("veterinary/new.html", error=error_not, old=old)
+            else:
+                try:
+                    db_session.add(user)
+                    db_session.commit()
+                except Exception as e:
+                    db_session.rollback()
+                    error = "You may have tried to enter a value already entered"
+                    return render_template("veterinary/new.html", error = error, old=old)
+                return redirect("/admin/vets")
+    return render_template("veterinary/new.html", counties=counties)
 
 
 @app.route("/admin/vets", methods=['GET', 'POST'])
 @app.route("/admin/vets/", methods=['GET', 'POST'])
 def all_vets():
-    vets = db_session.query(Veterinary).all()
-    return render_template("/veterinary/all.html", officers=vets)
+    vets = db_session.query(Veterinary).join(County).all()
+    # print(dir(vets[0]))
+    return render_template("/veterinary/all.html", vets=vets)
 
 
+@app.route("/admin/counties", methods=['GET', 'POST'])
+@app.route("/admin/counties/", methods=['GET', 'POST'])
+def counties():
+    if 'user' in session:
+        if session['user'] is None:
+            return redirect(url_for("admin_login"))
+        else:
+            if session['user_type'] == 'admin':
+                counties = db_session.query(County).all()
+                return render_template("admin/counties.html", counties=counties)
+            else:
+                return redirect(url_for('admin_login'))
+    else:
+        return redirect(url_for('admin_login'))
+
+@app.route("/admin/counties/new", methods=['GET', 'POST'])
+@app.route("/admin/counties/new/", methods=['GET', 'POST'])
+def new_county():
+    if 'user' in session:
+        if session['user'] is None:
+            return redirect(url_for("admin_login"))
+        else:
+            if session['user_type'] != 'admin':
+                return redirect(url_for('admin_login'))
+    else:
+        return redirect(url_for('admin_login'))
+    old = OrderedDict()
+    old['name'] = ''
+    if request.method == "POST":
+        name = request.form['name']
+        if name.strip() == '':
+            error_empty = "The county name must be specified"
+            return render_template("admin/newc.html", error= error_empty)
+        else:
+            cnt = County(name)
+            try:
+                db_session.add(cnt)
+                db_session.commit()
+            except Exception as ex:
+                error = "We have trouble processing your request"
+                db_session.rollback()
+                return render_template("admin/newc.html", error = error, old=old)
+            return redirect(url_for('counties'))
+    return render_template("admin/newc.html")
 @app.route("/admin/changepass", methods=['GET', 'POST'])
 @app.route("/admin/changepass/", methods=['GET', 'POST'])
 def admin_change_pass():

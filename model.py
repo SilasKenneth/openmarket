@@ -1,10 +1,10 @@
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, REAL
+from sqlalchemy import Column, Integer, String, ForeignKey, REAL, DateTime
 from passlib.apps import custom_app_context as pwd_context
 from passlib.hash import pbkdf2_sha256
-
+import datetime
 engine = create_engine("sqlite:///db/begin.db", convert_unicode=True)
 metadata = MetaData()
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
@@ -17,14 +17,16 @@ class Admin(Base):
     id = Column(Integer, primary_key=True)
     email = Column(String(50), unique=True, nullable=False)
     username = Column(String(50), unique=True, nullable=False)
+    fullnames = Column(String(100), nullable=False)
     password = Column(String(80), nullable=False)
     profile_pic = Column(String(50), nullable=False, default="/static/profiles/profile.png")
 
-    def __init__(self, email, username, password, profile_pic=None):
+    def __init__(self, email, fullnames, username, password, profile_pic=None):
         self.email = email
         self.username = username
         self.password = password
         self.profile_pic = profile_pic
+        self.fullnames = fullnames
 
     def hash_password(self):
         self.password = pbkdf2_sha256.hash(self.password)
@@ -41,19 +43,28 @@ class Veterinary(Base):
     password = Column(String(150), nullable=False)
     email = Column(String(150), nullable=False, unique=True)
     county = Column(Integer, ForeignKey("counties.id"))
+    national_id = Column(Integer, nullable=False, unique=True)
+    phone = Column(String(15), nullable=False, unique=True)
+    fromwhere = relationship('County', backref='veterinaries')
+    added = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+    status = Column(Integer, default=1, nullable=False)
 
-    def __init__(self, full_names, username, password, email, county):
+    def __init__(self, full_names, username, password, email, county, national_id, phone, added=None, status= None):
         self.full_names = full_names
         self.username = username
         self.password = password
         self.email = email
         self.county = county
-
+        self.phone = phone
+        self.national_id = national_id
+        self.added = added
+        self.status = status
+        
     def hash_password(self):
         self.password = pbkdf2_sha256.hash(self.password)
 
     def verify_password(self, password):
-        return pbkdf2_sha256.verify(self.password, password)
+        return pbkdf2_sha256.verify(password, self.password)
 
 
 class Trader(Base):
@@ -168,4 +179,4 @@ def init_db():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
-# init_db()
+#init_db()

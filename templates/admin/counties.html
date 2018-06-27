@@ -1,0 +1,39 @@
+{% extends "partials/main.html" %}
+{% block content %}
+  {% include "partials/admin_logged_in.html" %}
+  <div class="container">
+	  <br>
+  	<div class="col-md-7 col-md-offset-2">
+		<div class="row">
+
+		</div>
+		<div class="clearfix"></div>
+		<a class="btn btn-success btn-sm pull-right" href="/admin/counties/new">Add county</a>
+		<div class="clearfix"></div>
+		<hr>
+	</div>
+  	<div class="col-md-7 col-md-offset-2">
+  		<table class="table table-striped table-responsive">
+  			<thead>
+  				<tr class="bg-success">
+					<th>NO.</th>
+					<th>Name</th>
+  					<th>Actions</th>
+  				</tr>
+  			</thead>
+  			<tbody>
+  				{% for county in counties %}
+  				   <tr class="bg-warning">
+  				   	  <td>{{county.id}} </td>
+  				   	  <td>{{county.name}} </td>
+  				   	  <td style="width:15%">
+  				   	  	<a href="/admin/counties/{{county.id}}/edit" class="btn btn-primary btn-sm"><i class="fa fa-edit"> </i></a>
+  				   	  	<a href="/admin/counties/delete/{{county.id}}" class="btn btn-danger btn-sm pull-right"><i class="fa fa-trash"></i></a>
+  				   	  </td>
+  				   </tr>
+  				{% endfor %}
+  			</tbody>
+  		</table>
+  	</div>
+  </div>
+{% endblock %}
