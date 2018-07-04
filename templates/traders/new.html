@@ -14,7 +14,7 @@
     <hr>
     <div class="form-container">
         <p class="form-group">
-            <input type="text" name="name" class="form-control" placeholder="Name" value="{{ old['name'] }}">
+            <input type="text" name="name" class="form-control" placeholder="Name" value="{{ request.form['name'] }}">
         </p>
         <p class="form-group">
         <select class="form-control" prefix="Aria" name="county">
@@ -25,19 +25,19 @@
         </select>
         </p>
         <p class="form-group">
-            <input type="number" name="idnum" class="form-control" placeholder="Passport / ID" min="10000000" max="99999999" value="{{ old['idnum'] }}">
+            <input type="number" name="idnum" class="form-control" placeholder="Passport / ID" min="10000000" max="99999999" value="{{ request.form['idnum'] }}">
         </p>
          <p class="form-group">
-            <input type="tel" name="phone" class="form-control" placeholder="Phone no." value="{{ old['phone'] }}">
+            <input type="tel" name="phone" class="form-control" placeholder="Phone no." value="{{ request.form['phone'] }}">
         </p>
         <p class="form-group">
-            <input type="email" name="email" class="form-control" placeholder="Email address" value="{{ old['email'] }}">
+            <input type="email" name="email" class="form-control" placeholder="Email address" value="{{ request.form['email'] }}">
         </p>
         <p class="form-group">
-            <input type="password" name="password" class="form-control" placeholder="Password" value="{{ old['password'] }}">
+            <input type="password" name="password" class="form-control" placeholder="Password" value="{{ request.form['password'] }}">
         </p>
         <p class="form-group">
-            <input type="password" name="confirm_password" class="form-control" placeholder="Confirm password" value="{{ old['confirm_password'] }}">
+            <input type="password" name="confirm_password" class="form-control" placeholder="Confirm password" value="{{ request.form['confirm_password'] }}">
         </p>
         <br>
         <button type="submit" class="btn btn-success btn-block">Create account</button>

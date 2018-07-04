@@ -8,14 +8,14 @@
 
 		</div>
 		<div class="clearfix"></div>
-		<a class="btn btn-success btn-sm pull-right" href="/admin/vet/add">Add new vet</a>
+		<a class="btn btn-success btn-sm pull-right" href="/admin/vet/add"><i class="fa fa-plus"></i>    add new vet</a>
 		<div class="clearfix"></div>
 		<hr>
 	</div>
   	<div class="col-md-9 col-md-offset-1">
   		<table class="table">
   			<thead>
-  				<tr class="active">
+  				<tr class="success">
 					<th>ID NO.</th>
 					<th>Name</th>
   					<th>County</th>
@@ -26,21 +26,21 @@
   			</thead>
   			<tbody>
   				{% for vet in vets %}
-  				   <tr class="success">
+  				   <tr class="active">
               <td> {{ vet.national_id }}</td>
               <td> {{ vet.full_names }}</td>
               <td> {{ vet.fromwhere.name }}</td>
               <td> {{ vet.added|datetime }} </td>
               <td>
                 {% if vet.status == 1 %}
-                <button class="btn btn-success btn-sm btn-block" disabled></button>
+                <button class="btn btn-success btn-sm btn-block" title="Active vetenary officer" disabled></button>
                 {% else %}
-                  <button class="btn btn-danger btn-sm btn-block" disabled></button>
+                  <button class="btn btn-danger btn-sm btn-block" title="Inactive vetenary officer" disabled></button>
                 {% endif %}
               </td>
-              <td style="width:15%">
-                  <a href="/admin/vet/{{vet.id}}/edit" class="btn btn-primary btn-sm"><i class="fa fa-edit"> </i></a>
-                  <a href="/admin/vet/delete/{{vet.id}}" class="btn btn-danger btn-sm pull-right"><i class="fa fa-trash"></i></a>
+              <td style="width:10%">
+                  <a href="/admin/vet/{{vet.id}}/edit" class="btn btn-primary btn-xs"><i class="fa fa-edit"> </i></a>
+                  <a href="/admin/vet/delete/{{vet.id}}" class="btn btn-danger btn-xs pull-right"><i class="fa fa-trash"></i></a>
                 </td>
               </tr>
   				{% endfor %}

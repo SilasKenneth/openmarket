@@ -12,7 +12,7 @@
       <p class="alert alert-danger">{{ error }}</p>
       {% endif %}
       <p class="form-group">
-          <input type="text" name="username" class="form-control" placeholder="Email/ username" value="{% if old %}{{ old['username'] }}{% endif %}">
+          <input type="text" name="username" class="form-control" placeholder="Email/ username" value="{% if old %}{{ old['username'] }}{% endif %}" autocomplete="false" />
       </p>
       <p class="form-group">
           <input type="password" name="password" class="form-control" placeholder="Password"  />

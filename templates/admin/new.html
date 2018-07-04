@@ -15,11 +15,11 @@
    	     <p class="alert alert-danger">{{error}}</p>
    	   {% endif %}
    	  <br>
-   	  <input type="text" placeholder="Full names" name="fullnames" class="form-control"  value="{% if old %}{{old['fullnames']}}{% endif %}" /><br>
-   	  <input type="email" placeholder="Email address" name="email" class="form-control" value="{% if old %}{{old['email']}}{% endif %}"  /><br>
-   	  <input type="text" placeholder="Username" name="username" class="form-control"  value="{% if old %}{{old['username']}}{% endif %}" /><br>
-   	  <input type="password" placeholder="Password" name="password" class="form-control" value="{% if old %}{{old['password']}}{% endif %}" /><br>
-   	  <input type="password" placeholder="Confirm password" name="confirmpass" class="form-control" value="{% if old %}{{old['confirmpass']}}{% endif %}" /><br>
+   	  <input type="text" placeholder="Full names" name="fullnames" class="form-control"  value="{% if old %}{{old['fullnames']}}{% endif %}" autocomplete="false" /><br>
+   	  <input type="email" placeholder="Email address" name="email" class="form-control" value="{% if old %}{{old['email']}}{% endif %}"  autocomplete="false" /><br>
+   	  <input type="text" placeholder="Username" name="username" class="form-control"  value="{% if old %}{{old['username']}}{% endif %}" autocomplete="false" /><br>
+   	  <input type="password" placeholder="Password" name="password" class="form-control" value="{% if old %}{{old['password']}}{% endif %}"  autocomplete="false"/><br>
+   	  <input type="password" placeholder="Confirm password" name="confirmpass" class="form-control" value="{% if old %}{{old['confirmpass']}}{% endif %}" autocomplete="false" /><br>
    	  <button type="submit" class="btn btn-primary btn-block">Save the boss</button>
    	</form>
    </div>

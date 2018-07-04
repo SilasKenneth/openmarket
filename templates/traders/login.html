@@ -11,10 +11,10 @@
       </h3>
       <br><br>
       <p class="form-group">
-          <input type="text" name="email_username" class="form-control" placeholder="Email/ username" value="{{ old['username'] }}">
+          <input type="text" name="email_username" class="form-control" placeholder="Email/ username" value="{{ request.form['username'] }}">
       </p>
       <p class="form-group">
-          <input type="password" name="pass" class="form-control" placeholder="Password" value="{{ old['password'] }}" >
+          <input type="password" name="pass" class="form-control" placeholder="Password" value="{{ request.form['password'] }}" >
       </p>
       <button type="submit" name="login" value="yes" class="btn btn-primary btn-block">Sign in</button>
       <div class="clearfix"></div>

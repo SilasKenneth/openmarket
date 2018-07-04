@@ -8,7 +8,7 @@
 
 		</div>
 		<div class="clearfix"></div>
-		<a class="btn btn-success btn-sm pull-right" href="/admin/counties/new">Add county</a>
+		<a class="btn btn-success btn-sm pull-right" href="/admin/counties/new"><i class="fa fa-plus"></i>    Add county</a>
 		<div class="clearfix"></div>
 		<hr>
 	</div>
@@ -25,10 +25,10 @@
   				{% for county in counties %}
   				   <tr class="bg-warning">
   				   	  <td>{{county.id}} </td>
-  				   	  <td>{{county.name}} </td>
-  				   	  <td style="width:15%">
-  				   	  	<a href="/admin/counties/{{county.id}}/edit" class="btn btn-primary btn-sm"><i class="fa fa-edit"> </i></a>
-  				   	  	<a href="/admin/counties/delete/{{county.id}}" class="btn btn-danger btn-sm pull-right"><i class="fa fa-trash"></i></a>
+  				   	  <td class="font-weight-bold"><em>{{county.name}}</em> </td>
+  				   	  <td style="width:11%">
+  				   	  	<a href="/admin/counties/{{county.id}}/edit" class="btn btn-primary btn-xs"><i class="fa fa-edit"> </i></a>
+  				   	  	<a href="/admin/counties/delete/{{county.id}}" class="btn btn-danger btn-xs pull-right"><i class="fa fa-trash"></i></a>
   				   	  </td>
   				   </tr>
   				{% endfor %}

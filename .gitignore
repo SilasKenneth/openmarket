@@ -1,7 +1,6 @@
-.*
 static/js/
 static/css/
 quick-view-for-magento-2-popup-1.png
-__*
+__pycache__/
 .idea/
 .vscode/

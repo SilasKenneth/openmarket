@@ -2,7 +2,6 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey, REAL, DateTime
-from passlib.apps import custom_app_context as pwd_context
 from passlib.hash import pbkdf2_sha256
 import datetime
 engine = create_engine("sqlite:///db/begin.db", convert_unicode=True)
@@ -59,7 +58,7 @@ class Veterinary(Base):
         self.national_id = national_id
         self.added = added
         self.status = status
-        
+
     def hash_password(self):
         self.password = pbkdf2_sha256.hash(self.password)
 
@@ -80,13 +79,14 @@ class Trader(Base):
     livestocks = relationship("Livestock", back_populates="traders")
     profile_pic = Column(String(250), nullable=False, default="/static/profiles/profile.jpg")
 
-    def __init__(self, name=None, email=None, county=1, id_pass=None, phone=None, password=None):
+    def __init__(self, name=None, email=None, county=1, id_pass=None, phone=None, password=None, bio=None):
         self.name = name
         self.email = email
         self.county = county
         self.id_pass = id_pass
         self.phone = phone
         self.password = password
+        self.bio = bio
 
     def hash_password(self):
         self.password = pbkdf2_sha256.hash(self.password)
