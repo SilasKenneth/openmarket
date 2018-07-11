@@ -12,6 +12,9 @@
     </h3>
     </center>
     <hr>
+    {% if error %}
+      <p class="alert alert-danger">{{ error }}</p>
+    {% endif %}
     <div class="form-container">
         <p class="form-group">
             <input type="text" name="name" class="form-control" placeholder="Name" value="{{ request.form['name'] }}">

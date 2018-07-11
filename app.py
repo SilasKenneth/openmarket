@@ -10,7 +10,11 @@ errors_signup = {
 }
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
-
+"""
+ @param user_name
+ Check if a specific user is logged_in if they are then just return true
+ otherwise return False
+"""
 def logged_in(user_name):
     if 'user' not in session:
         return False
@@ -20,14 +24,19 @@ def logged_in(user_name):
         return False
     return True
 
-
+"""
+ If a session currently exists return True otherwise return False
+ to denote that no user is currently logged in
+"""
 def logged():
     if 'user' in session:
         return True
     if session['user'] is not None:
         return True
     return False
-
+"""
+The date format function
+"""
 
 def format_datetime(value):
     months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -35,8 +44,16 @@ def format_datetime(value):
 
 
 app.jinja_env.filters['datetime'] = format_datetime
+
+"""
+ Make flask recognize routes with trailing slashes and ones with none as the same
+ for example /login and /login/ should be the same
+"""
 app.url_map.strict_slashes = False
 
+"""
+Check for empty fields in a collection of fields 
+"""
 def any_empty(fields):
     for field in fields:
         if fields[str(field).strip()].strip() == "":
@@ -44,13 +61,19 @@ def any_empty(fields):
     return sign_up_error
 
 
+"""
+The index route
+
+"""
 @app.route("/")
 def index():
     return render_template("index.html")
 
 
+"""
+The trader_login route to handle all the login of traders
+"""
 @app.route("/trader/login", methods=["POST", "GET"])
-@app.route("/trader/login/", methods=["POST", "GET"])
 def trader_login():
     global error
     if request.method == "POST":
@@ -79,6 +102,9 @@ def trader_login():
     return render_template("traders/login.html")
 
 
+"""
+ Traders create their accounts through this route
+"""
 @app.route("/trader/signup", methods=["POST", "GET"])
 def trader_signup():
     counties = County.query.all()
@@ -90,12 +116,18 @@ def trader_signup():
         idnum = request.form['idnum'].strip()
         phone = request.form['phone'].strip()
         password = request.form['password'].strip()
-        if name == "" or email == "" or county == "" or idnum == "" or phone == "" or password == "":
+        confpass = request.form['confirm_password'].strip()
+        if name == "" or email == "" or county == "" or idnum == "" or phone == "" or password == "" or confpass == "":
             error = "Please fill in all the fields"
             return render_template("trader/new.html", error=error, counties=counties)
+
         try:
             trader = Trader(name, email, county, idnum, phone, password)
             trader.hash_password()
+            passwords_match = trader.verify_password(confpass)
+            if not passwords_match:
+                error = "The password and confirmation do not match"
+                return render_template("trader/new.html", error=error, counties=counties)
             db_session.add(trader)
             db_session.commit()
             usere = OrderedDict()
@@ -109,42 +141,44 @@ def trader_signup():
             session['user_type'] = "trader"
             return redirect(url_for("trader_home"))
         except Exception as ex:
+            print(ex)
             db_session.rollback()
             error = "Sorry we had a problem saving your record to the database"
             return render_template("traders/new.html", error=error, counties=counties)
     return render_template("traders/new.html", counties=counties)
 
-
+""" 
+Trader change password here
+"""
 @app.route("/trader/changepass")
 def trader_changepass():
-    if 'username' not in session:
-        return redirect("/trader/login")
+    if not logged_in("trader"):
+        return redirect("trader_login")
     if request.method == "POST":
         currentpass = request.form['current_pass']
         newpass = request.form['new_pass']
     else:
-        return render_template("traders/changepass.html")
+        return render_template("traders/changepass.html", user=session['user'])
 
-
+#The logout handler
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("index"))
 
 
+"""
+The admin homepage route
+"""
 @app.route("/admin")
 def admin_index():
-    if 'user' in session:
-        if 'user_type' in session:
-            if session['user_type'] != 'admin':
-                return redirect(url_for("admin_login"))
-            else:
-                return render_template("admin/home.html", user=session['user'])
-        else:
-            return redirect(url_for("admin_login"))
-    else:
-        return redirect(url_for('admin_login'))
+    if not logged_in("admin"):
+        return redirect(url_for("admin_login"))
+    return redirect(url_for('admin_login'))
 
+"""
+  Create a new admin account here
+"""
 
 @app.route("/admin/new", methods=['GET', 'POST'])
 def admin_new():
@@ -176,20 +210,21 @@ def admin_new():
     return render_template("admin/new.html")
 
 
+"""
+  View your profile when logged in as administrator
+"""
 @app.route("/admin/account", methods=['GET', 'POST'])
 def admin_prof():
-    if 'user' in session:
-        if session['user'] is None:
-            return redirect(url_for("admin_login"))
-        else:
-            if session['user_type'] == 'admin':
-                return render_template('admin/profile.html')
-            else:
-                return redirect(url_for('admin_login'))
-    else:
-        return redirect(url_for('admin_login'))
+    if not logged_in("admin"):
+        return redirect(url_for("admin_login"))
+    user = session['user']
+    return render_template('admin/profile.html', user=user)
 
 
+
+"""
+ Edit the details of an admin account
+"""
 @app.route("/admin/account/edit", methods=['POST', 'GET'])
 def admin_edit():
     old = OrderedDict()
@@ -207,6 +242,9 @@ def admin_edit():
     return render_template("admin/edit.html", user=user)
 
 
+"""
+ Add a new vet, this is performed by the administrator
+"""
 @app.route("/admin/vet/add", methods=['POST', 'GET'])
 def vet_new():
     old = OrderedDict()
@@ -243,12 +281,18 @@ def vet_new():
     return render_template("veterinary/new.html", counties=counties)
 
 
+"""
+View all vets
+"""
 @app.route("/admin/vets", methods=['GET', 'POST'])
 def all_vets():
     vets = db_session.query(Veterinary).join(County).all()
     return render_template("/veterinary/all.html", vets=vets)
 
 
+"""
+  View a list of all counties
+"""
 @app.route("/admin/counties", methods=['GET', 'POST'])
 def counties():
     if not logged_in("admin"):
@@ -256,7 +300,10 @@ def counties():
     counties = db_session.query(County).all()
     return render_template("admin/counties.html", counties=counties)
 
+"""
+Add a new county
 
+"""
 @app.route("/admin/counties/new", methods=['GET', 'POST'])
 def new_county():
     if not logged_in("admin"):
@@ -278,7 +325,9 @@ def new_county():
             return redirect(url_for('counties'))
     return render_template("admin/newc.html")
 
-
+"""
+  Administrators change their passwords here
+"""
 @app.route("/admin/changepass", methods=['GET', 'POST'])
 def admin_change_pass():
     if not logged_in("admin"):
@@ -301,8 +350,11 @@ def admin_change_pass():
     return render_template("admin/changepass.html")
 
 
-@app.route("/admin/login/", methods=['POST', 'GET'])
-@app.route("/admin/login/", methods=['POST', 'GET'])
+"""
+ The admin logs in here
+"""
+
+@app.route("/admin/login", methods=['POST', 'GET'])
 def admin_login():
     old = OrderedDict()
     username = ""
@@ -311,8 +363,6 @@ def admin_login():
         username = request.form['username']
         password = request.form['password']
         if password.strip() != "" and username.strip() != "":
-            old['password'] = password.strip()
-            old['username'] = username.strip()
             creds = db_session.query(Admin).filter(
                 (Admin.username == username) | (Admin.email == username)).one_or_none()
             if creds is None:
@@ -338,16 +388,23 @@ def admin_login():
             return render_template("admin/login.html", error=error_empty, old=old)
     return render_template("admin/login.html", old=old)
 
+"""
+This is the trader homepage 
+"""
 
 @app.route("/trader")
-@app.route("/trader/")
 def trader_home():
+    if not logged_in("trader"):
+        return redirect(url_for("trader_login"))
     return render_template("traders/index.html")
 
-
+"""
+  View a traders profile
+"""
 @app.route("/traders/<int:ids>")
-@app.route("/traders/<int:ids>/")
 def view_trader(ids):
+    if not logged():
+        return redirect(url_for("index"))
     trader = db_session.query(Trader).filter(Trader.id == ids).one_or_none()
     if trader is None:
         return render_template("traders/404.html")
@@ -357,48 +414,51 @@ def view_trader(ids):
 
 # Livestock route
 @app.route("/livestocks/<int:ids>")
-@app.route("/livestocks/<int:ids>/")
 def view_livestock(ids):
+    if not logged():
+        return redirect(url_for("index"))
     live = db_session.query(Livestock).filter(Livestock.id == ids).one_or_none()
     if live is None:
         return render_template("livestocks/404.html", animal=ids)
     return render_template("livestocks/profile.html", livestock=live)
 
 
-@app.route("/livestocks/<int:ids>/edit")
-@app.route("/livestocks/<int:ids>/edit/")
+@app.route("/livestocks/<int:ids>/edit", methods=['GET', 'POST'])
 def edit_livestock(ids):
+    if not logged_in("admin"):
+        return redirect(url_for("admin_login"))
     live = db_session.query(Livestock).filter(Livestock.id == ids).one_or_none()
     if live is None:
         return render_template("livestocks/404.html")
     trader = live.traders
+    if request.method == "POST":
+        return render_template("livestocks/edit.html", live=live, trader=trader)
     return render_template("livestocks/edit.html", live=live, trader=trader)
 
 
 @app.route("/livestocks/<int:ids>/delete", methods=["POST", "GET"])
-@app.route("/livestocks/<int:ids>/delete/", methods=["POST", "GET"])
 def delete_livestock(ids):
     return render_template("livestocks/delete.html")
 
 
 @app.route("/livestocks/<int:ids>/photoupload", methods=["GET", "POST"])
-@app.route("/livestocks/<int:ids>/photoupload/", methods=["GET", "POST"])
 def livestock_photoupload(ids):
     return render_template("livestocks/photoupload.html")
 
 
 @app.route("/livestocks")
-@app.route("/livestocks/")
 def livestock_index():
+    if not logged():
+        return redirect(url_for("index"))
     livestocks = db_session.query(Livestock).all()
     return render_template("livestocks/index.html", livestocks=livestocks)
 
 
 # Medications route
-
 @app.route("/livestocks/<int:ids>/medications", methods=["GET", "POST"])
-@app.route("/livestocks/<int:ids>/medications/", methods=["GET", "POST"])
 def medications(ids):
+    if not logged():
+        return redirect(url_for("index"))
     animal = db_session.query(Livestock).filter(Livestock.id == ids).one_or_none()
     if animal is None:
         return render_template("livestocks/404.html")
@@ -407,17 +467,37 @@ def medications(ids):
     return render_template("medications/index.html", animal=animal, medications=medication, diseases=diseases)
 
 
-@app.route("/livestocks/<int:ids>/medications/new")
-@app.route("/livestocks/<int:ids>/medications/new/")
+@app.route("/livestocks/<int:ids>/medications/new", methods=['GET', 'POST'])
 def create_medication(ids):
+    if not logged_in("vet"):
+        return redirect(url_for("vet_login"))
     return render_template("medications/new.html")
 
+@app.route("/vet/login", methods=['GET', 'POST'])
+def vet_login():
+    if request.method == 'POST':
+        username = request.form['username'].strip()
+        password = request.form['password'].strip()
+        if username == "" or password == "":
+            error = "Please fill in the email and password"
+            return render_template("veterinary/login.html", error=error)
+        vet = db_session.query(Veterinary).filter((Veterinary.email == username) | (Veterinary.username == username)).one_or_none()
+        if vet is None:
+            error = "The username or password is incorrect"
+            return render_template("veterinary/login.html", error=error)
+        if not vet.verify_password(password):
+            error = "The username or password is incorrect"
+            return render_template("veterinary/login.html", error=error)
+        session['user_type'] = 'vet'
+        session['user'] = vet
+        return redirect(url_for("vet_home"))
+    return render_template("veterinary/login.html")
 
 @app.route("/livestocks/<int:ids>/medications/<int:ids1>")
-@app.route("/livestocks/<int:ids>/medications/<int:ids1>/")
 def view_medication(ids, ids1):
+    if not logged():
+        return redirect(url_for("index"))
     return render_template("medications/view.html")
-
 
 if __name__ == "__main__":
     app.run(host="localhost", port=3000, debug=True)

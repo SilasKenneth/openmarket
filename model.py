@@ -92,7 +92,7 @@ class Trader(Base):
         self.password = pbkdf2_sha256.hash(self.password)
 
     def verify_password(self, password):
-        return pbkdf2_sha256.verify(self.password, password)
+        return pbkdf2_sha256.verify(password, self.password)
 
 
 class Type(Base):
