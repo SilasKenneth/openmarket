@@ -12,10 +12,10 @@
       <p class="alert alert-danger">{{ error }}</p>
       {% endif %}
       <p class="form-group">
-          <input type="text" name="username" class="form-control" placeholder="Email/ username" value="{% if old %}{{ old['username'] }}{% endif %}" autocomplete="false" />
+          <input type="text" name="username" class="form-control" placeholder="Email/ username" value="{{ request.form['username'] }}" autocomplete="false" />
       </p>
       <p class="form-group">
-          <input type="password" name="password" class="form-control" placeholder="Password"  />
+          <input type="password" name="password" class="form-control" placeholder="Password" value="{{ request.form['password'] }}" />
       </p>
       <button type="submit" name="login" value="yes" class="btn btn-primary btn-block">Sign in</button>
       <div class="clearfix"></div>

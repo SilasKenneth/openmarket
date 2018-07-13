@@ -1,5 +1,15 @@
-<div class="col-md-4 col-md-offset-4">
-    <form method="post">
+{% extends "partials/main.html" %}
+{% block content %}
+{% include "partials/trader_logged_in.html" %}
 
-    </form>
+<div class="profile col-md-4 col-md-offset-4 form-center1">
+	<form method="post">
+		<center><h3 class="title">Change your password</h3></center>
+		<br>
+		<input type="password" class="form-control" placeholder="Current password" /><br>
+		<input type="password" class="form-control" placeholder="New password" /><br>
+		<input type="password" class="form-control" placeholder="Confirm new password" /><br>
+		<button class="btn btn-primary btn-block">Confirm password change</button>
+	</form>
 </div>
+{% endblock %}

@@ -70,6 +70,13 @@ def index():
     return render_template("index.html")
 
 
+
+@app.route("/trader/account")
+def trader_account():
+    if not logged_in("trader"):
+        return redirect(url_for("trader_login"))
+    return render_template("traders/view.html", creds=session['user'])
+
 """
 The trader_login route to handle all the login of traders
 """
@@ -150,15 +157,22 @@ def trader_signup():
 """ 
 Trader change password here
 """
-@app.route("/trader/changepass")
+@app.route("/trader/changepass", methods=['GET', "POST"])
 def trader_changepass():
     if not logged_in("trader"):
-        return redirect("trader_login")
+        return redirect(url_for("trader_login"))
+    me = db_session.query(Trader).filter(Trader.id == session['user']['id']).one_or_none()
+    if me is None:
+        return redirect(url_for("trader_login"))
     if request.method == "POST":
-        currentpass = request.form['current_pass']
-        newpass = request.form['new_pass']
-    else:
-        return render_template("traders/changepass.html", user=session['user'])
+        currentpass = request.form['current_pass'].strip()
+        newpass = request.form['new_pass'].strip()
+        newpass_conf = request.form['new_pass_conf'].strip()
+        if not me.verify_password(currentpass):
+            error = "The current password is not correct"
+            return render_template("trader/changepass.html", user=me)
+        
+    return render_template("traders/changepass.html", user=me)
 
 #The logout handler
 @app.route("/logout")
@@ -172,9 +186,13 @@ The admin homepage route
 """
 @app.route("/admin")
 def admin_index():
+    # admin = Admin("silaskenn@gmail.com", "Silas Kenneth", "silaskenn","123")
+    # admin.hash_password()
+    # db_session.add(admin)
+    # db_session.commit()
     if not logged_in("admin"):
         return redirect(url_for("admin_login"))
-    return redirect(url_for('admin_login'))
+    return render_template("admin/home.html")
 
 """
   Create a new admin account here
@@ -377,12 +395,16 @@ def admin_login():
                 user['id'] = creds.id
                 user['fullnames'] = creds.fullnames
                 # print(user)
+                # print(user)
                 session['user_type'] = 'admin'
                 session['user'] = user
+                print(session)
                 if verified:
                     return redirect(url_for("admin_index"))
-                error_wrong = "Wrong username or password"
-                return render_template("admin/login.html", old=old, error=error_wrong)
+                else:
+                    session.clear()
+                    error_wrong = "Wrong username or password"
+                    return render_template("admin/login.html", old=old, error=error_wrong)
         else:
             error_empty = "Please specify a username and a password!"
             return render_template("admin/login.html", error=error_empty, old=old)
