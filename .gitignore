@@ -7,3 +7,4 @@ __pycache__/
 test_app*
 db/begin.db
 notdone.ks
+.pytest_cache
