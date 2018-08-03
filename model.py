@@ -64,7 +64,18 @@ class Veterinary(Base):
 
     def verify_password(self, password):
         return pbkdf2_sha256.verify(password, self.password)
-
+    @property
+    def serialize(self):
+        return {
+            "id": self.id,
+            "full_names": self.full_names,
+            "username": self.username,
+            "county": self.county,
+            "national_id": self.national_id,
+            "phone": self.phone,
+            "status": self.status,
+            "email": self.email
+        }
 
 class Trader(Base):
     __tablename__ = 'traders'

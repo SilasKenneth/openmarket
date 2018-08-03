@@ -601,6 +601,12 @@ def create_medication(ids):
         return redirect(url_for("vet_login"))
     return render_template("medications/new.html")
 
+@app.route("/vet")
+def vet_home():
+    if not logged_in("vet"):
+        return redirect(url_for("vet_login"))
+    print(session['user'])
+    return render_template("veterinary/index.html")
 
 @app.route("/vet/login", methods=['GET', 'POST'])
 def vet_login():
@@ -612,6 +618,7 @@ def vet_login():
             return render_template("veterinary/login.html", error=error)
         vet = db_session.query(Veterinary).filter((Veterinary.email == username) | (
             Veterinary.username == username)).one_or_none()
+
         if vet is None:
             error = "The username or password is incorrect"
             return render_template("veterinary/login.html", error=error)
@@ -619,7 +626,8 @@ def vet_login():
             error = "The username or password is incorrect"
             return render_template("veterinary/login.html", error=error)
         session['user_type'] = 'vet'
-        session['user'] = vet
+        vete = vet.serialize
+        session['user'] = vete
         return redirect(url_for("vet_home"))
     return render_template("veterinary/login.html")
 
