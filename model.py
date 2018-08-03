@@ -109,6 +109,7 @@ class Livestock(Base):
     id = Column(Integer, primary_key=True)
     tag = Column(Integer, unique=True)
     type_id = Column(Integer, ForeignKey("types.id"))
+    gender = Column(Integer, nullable=False)
     owner_id = Column(Integer, ForeignKey("traders.id"))
     traders = relationship("Trader")
     diagnosis = relationship("Diagnosis", back_populates="livestocks")
@@ -116,7 +117,12 @@ class Livestock(Base):
     on_sale = Column(Integer, nullable=False, default=0)
     types = relationship("Type")
     profile_pic = Column(String(120), nullable=False)
-
+    def __init__(self, tag, type_id, gender, owner_id):
+        self.tag = tag
+        self.type_id = type_id
+        self.gender = gender
+        self.owner_id = owner_id
+        self.on_sale = 0
 
 class Diagnosis(Base):
     __tablename__ = "diagnosis"
@@ -126,13 +132,16 @@ class Diagnosis(Base):
     disease_id = Column(Integer, ForeignKey("diseases.id"))
     livestocks = relationship("Livestock")
     visits = relationship("Visit", back_populates="diagnosis")
+    def __init__(self, animal_id, visit_id, disease_id):
+        self.animal_id = animal_id
+        self.visit_id = visit_id
+        self.disease_id = disease_id
 
 
 class Visit(Base):
     __tablename__ = "visits"
     id = Column(Integer, primary_key=True)
     diagnosis = relationship("Diagnosis", back_populates="visits")
-
 
 class Disease(Base):
     __tablename__ = 'diseases'
@@ -142,7 +151,6 @@ class Disease(Base):
     symptoms = relationship("Symptom", back_populates="diseases")
     # medication_id = Column(Integer, ForeignKey("medications.id"))
     medications = relationship("Medication", back_populates="diseases")
-
     def __init__(self, name=None, effect=None):
         self.effect = effect
         self.name = name
@@ -157,8 +165,10 @@ class Medication(Base):
     diseases = relationship("Disease", back_populates="medications")
     livestocks = relationship("Livestock", back_populates="medications")
 
-    def __init__(self):
-        pass
+    def __init__(self, name, disease_id, livestock_id):
+        self.name = name
+        self.disease_id = disease_id
+        self.livestock_id = livestock_id
 
 
 class Symptom(Base):
@@ -167,7 +177,9 @@ class Symptom(Base):
     description = Column(String(1000))
     disease_id = Column(Integer, ForeignKey("diseases.id"))
     diseases = relationship("Disease", back_populates="symptoms")
-
+    def __init__(self, description, disease_id):
+        self.description = description
+        self.disease_id = disease_id
 
 class County(Base):
     __tablename__ = "counties"
