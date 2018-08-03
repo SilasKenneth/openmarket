@@ -1,4 +1,68 @@
 {% extends "partials/main.html" %}
 {% block content %}
 {% include "partials/trader_logged_in.html" %}
+<style>
+    .just-white{
+        background: #fff;
+        overflow: hidden;
+    }
+    .tab-pane{
+        padding: 20px;
+    }
+    .thumbnail{
+        margin-right:10px;
+    }
+    #market .row:first-child, #mine .row:first-child{
+        margin-left:20px;
+    }
+    .tlabel{
+        margin-top: -4px;
+    }
+</style>
+
+<div class="col-md-8 col-md-offset-2">
+<div class="just-white">
+    <div class="container">
+        <ul class="nav nav-tabs" role="tablist">
+          <li ><a href="#market" role="tab" data-toggle="tab">Market</a></li>
+          <li class="active"><a href="#mine" role="tab" data-toggle="tab">My Livestock</a></li>
+        </ul>
+    </div>
+    <!-- Tab panes -->
+    <div class="row">
+    <div class="tab-content">
+      <div class="tab-pane" id="market">
+          <div class="row">
+          {% for item in range(3) %}
+              <div class="thumbnail col-md-3">
+                  <img src="/static/bg.jpg" class="animal-cover img-responsive"  alt="{{ item.name }}"/>
+                  <h4 class="tlabel">Something here</h4>
+                  <hr>
+                  <div class="container">
+                  </div>
+              </div>
+          {% endfor %}
+          </div>
+      </div>
+
+      <div class="tab-pane active" id="mine">
+           <div class="row">
+          {% for item in range(3) %}
+              <div class="thumbnail col-md-3">
+                  <img src="/static/goat-500x500.jpg" class="animal-cover img-responsive"  alt="{{ item.name }}"/>
+                  <h4 class="tlabel">Something here</h4>
+                  <hr>
+                  <div class="container">
+                      <br>
+                      <a class="btn btn-primary btn-sm">View or edit  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-arrow-right"></i> </a>
+                  </div>
+              </div>
+          {% endfor %}
+          </div>
+      </div>
+
+    </div>
+    </div>
+</div>
+</div>
 {% endblock %}

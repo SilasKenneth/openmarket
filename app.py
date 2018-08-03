@@ -15,6 +15,8 @@ app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
  Check if a specific user is logged_in if they are then just return true
  otherwise return False
 """
+
+
 def logged_in(user_name):
     if 'user' not in session:
         return False
@@ -28,6 +30,8 @@ def logged_in(user_name):
  If a session currently exists return True otherwise return False
  to denote that no user is currently logged in
 """
+
+
 def logged():
     if 'user' in session:
         return True
@@ -38,8 +42,10 @@ def logged():
 The date format function
 """
 
+
 def format_datetime(value):
-    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     return str(value.day) + "," + str(months[value.month - 1]) + " " + str(value.year)
 
 
@@ -54,6 +60,8 @@ app.url_map.strict_slashes = False
 """
 Check for empty fields in a collection of fields 
 """
+
+
 def any_empty(fields):
     for field in fields:
         if fields[str(field).strip()].strip() == "":
@@ -65,10 +73,11 @@ def any_empty(fields):
 The index route
 
 """
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
-
 
 
 @app.route("/trader/account")
@@ -80,6 +89,8 @@ def trader_account():
 """
 The trader_login route to handle all the login of traders
 """
+
+
 @app.route("/trader/login", methods=["POST", "GET"])
 def trader_login():
     global error
@@ -89,7 +100,8 @@ def trader_login():
         if username == "" or password == "":
             error = "Please fill in all the fields"
             return render_template("traders/login.html", error=error)
-        user = db_session.query(Trader).filter(Trader.email == username).one_or_none()
+        user = db_session.query(Trader).filter(
+            Trader.email == username).one_or_none()
         if user is None:
             error = "The email or password is incorrect"
             return render_template("traders/login.html", error=error)
@@ -112,6 +124,8 @@ def trader_login():
 """
  Traders create their accounts through this route
 """
+
+
 @app.route("/trader/signup", methods=["POST", "GET"])
 def trader_signup():
     counties = County.query.all()
@@ -126,7 +140,7 @@ def trader_signup():
         confpass = request.form['confirm_password'].strip()
         if name == "" or email == "" or county == "" or idnum == "" or phone == "" or password == "" or confpass == "":
             error = "Please fill in all the fields"
-            return render_template("trader/new.html", error=error, counties=counties)
+            return render_template("traders/new.html", error=error, counties=counties)
 
         try:
             trader = Trader(name, email, county, idnum, phone, password)
@@ -134,7 +148,7 @@ def trader_signup():
             passwords_match = trader.verify_password(confpass)
             if not passwords_match:
                 error = "The password and confirmation do not match"
-                return render_template("trader/new.html", error=error, counties=counties)
+                return render_template("traders/new.html", error=error, counties=counties)
             db_session.add(trader)
             db_session.commit()
             usere = OrderedDict()
@@ -157,11 +171,14 @@ def trader_signup():
 """ 
 Trader change password here
 """
+
+
 @app.route("/trader/changepass", methods=['GET', "POST"])
 def trader_changepass():
     if not logged_in("trader"):
         return redirect(url_for("trader_login"))
-    me = db_session.query(Trader).filter(Trader.id == session['user']['id']).one_or_none()
+    me = db_session.query(Trader).filter(
+        Trader.id == session['user']['id']).one_or_none()
     if me is None:
         return redirect(url_for("trader_login"))
     if request.method == "POST":
@@ -170,11 +187,13 @@ def trader_changepass():
         newpass_conf = request.form['new_pass_conf'].strip()
         if not me.verify_password(currentpass):
             error = "The current password is not correct"
-            return render_template("trader/changepass.html", user=me)
-        
+            return render_template("traders/changepass.html", user=me)
+
     return render_template("traders/changepass.html", user=me)
 
-#The logout handler
+# The logout handler
+
+
 @app.route("/logout")
 def logout():
     session.clear()
@@ -184,6 +203,8 @@ def logout():
 """
 The admin homepage route
 """
+
+
 @app.route("/admin")
 def admin_index():
     # admin = Admin("silaskenn@gmail.com", "Silas Kenneth", "silaskenn","123")
@@ -197,6 +218,7 @@ def admin_index():
 """
   Create a new admin account here
 """
+
 
 @app.route("/admin/new", methods=['GET', 'POST'])
 def admin_new():
@@ -231,6 +253,8 @@ def admin_new():
 """
   View your profile when logged in as administrator
 """
+
+
 @app.route("/admin/account", methods=['GET', 'POST'])
 def admin_prof():
     if not logged_in("admin"):
@@ -239,10 +263,11 @@ def admin_prof():
     return render_template('admin/profile.html', user=user)
 
 
-
 """
  Edit the details of an admin account
 """
+
+
 @app.route("/admin/account/edit", methods=['POST', 'GET'])
 def admin_edit():
     old = OrderedDict()
@@ -263,6 +288,8 @@ def admin_edit():
 """
  Add a new vet, this is performed by the administrator
 """
+
+
 @app.route("/admin/vet/add", methods=['POST', 'GET'])
 def vet_new():
     old = OrderedDict()
@@ -282,7 +309,8 @@ def vet_new():
             return render_template("veterinary/new.html", error=error_empty, old=old)
         else:
             username = str(email).split("@")[0]
-            user = Veterinary(fullnames, username, password, email, county, national_id, phone)
+            user = Veterinary(fullnames, username, password,
+                              email, county, national_id, phone)
             user.hash_password()
             if not user.verify_password(confirmpass):
                 error_not = "The two passwords do not match"
@@ -302,6 +330,8 @@ def vet_new():
 """
 View all vets
 """
+
+
 @app.route("/admin/vets", methods=['GET', 'POST'])
 def all_vets():
     vets = db_session.query(Veterinary).join(County).all()
@@ -311,6 +341,8 @@ def all_vets():
 """
   View a list of all counties
 """
+
+
 @app.route("/admin/counties", methods=['GET', 'POST'])
 def counties():
     if not logged_in("admin"):
@@ -322,6 +354,8 @@ def counties():
 Add a new county
 
 """
+
+
 @app.route("/admin/counties/new", methods=['GET', 'POST'])
 def new_county():
     if not logged_in("admin"):
@@ -346,6 +380,8 @@ def new_county():
 """
   Administrators change their passwords here
 """
+
+
 @app.route("/admin/changepass", methods=['GET', 'POST'])
 def admin_change_pass():
     if not logged_in("admin"):
@@ -357,7 +393,8 @@ def admin_change_pass():
         if passconf == "" or newpass == "" or currpass == "":
             error_e = "The fields cannot be empty"
             return render_template("admin/changepass.html", error=error_e)
-        user = db_session.query(Admin).filter(Admin.id == session['user']['id']).first()
+        user = db_session.query(Admin).filter(
+            Admin.id == session['user']['id']).first()
         if passconf != newpass:
             error_nm = "The new password and confirmation do not match"
             return render_template("admin/changepass.html", error=error_nm)
@@ -372,11 +409,16 @@ def admin_change_pass():
  The admin logs in here
 """
 
+
 @app.route("/admin/login", methods=['POST', 'GET'])
 def admin_login():
     old = OrderedDict()
     username = ""
     password = ""
+    # adm = Admin("silaskenn@gmail.com", "Silas Kenneth", "silaskenn", "Nyamwaro2012")
+    # adm.hash_password()
+    # db_session.add(adm)
+    # db_session.commit()
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
@@ -414,15 +456,20 @@ def admin_login():
 This is the trader homepage 
 """
 
+
 @app.route("/trader")
 def trader_home():
     if not logged_in("trader"):
         return redirect(url_for("trader_login"))
-    return render_template("traders/index.html")
+    market = db_session.query(Livestock).filter(Livestock.on_sale == 1).all()
+    mine = db_session.query(Livestock).filter(Livestock.owner_id == session['user']['id'])
+    return render_template("traders/index.html", mine=mine, market=market)
 
 """
   View a traders profile
 """
+
+
 @app.route("/traders/<int:ids>")
 def view_trader(ids):
     if not logged():
@@ -430,7 +477,8 @@ def view_trader(ids):
     trader = db_session.query(Trader).filter(Trader.id == ids).one_or_none()
     if trader is None:
         return render_template("traders/404.html")
-    county = db_session.query(County).filter(County.id == trader.county).one_or_none()
+    county = db_session.query(County).filter(
+        County.id == trader.county).one_or_none()
     return render_template("traders/profile.html", trader=trader, county=county)
 
 
@@ -439,7 +487,8 @@ def view_trader(ids):
 def view_livestock(ids):
     if not logged():
         return redirect(url_for("index"))
-    live = db_session.query(Livestock).filter(Livestock.id == ids).one_or_none()
+    live = db_session.query(Livestock).filter(
+        Livestock.id == ids).one_or_none()
     if live is None:
         return render_template("livestocks/404.html", animal=ids)
     return render_template("livestocks/profile.html", livestock=live)
@@ -449,7 +498,8 @@ def view_livestock(ids):
 def edit_livestock(ids):
     if not logged_in("admin"):
         return redirect(url_for("admin_login"))
-    live = db_session.query(Livestock).filter(Livestock.id == ids).one_or_none()
+    live = db_session.query(Livestock).filter(
+        Livestock.id == ids).one_or_none()
     if live is None:
         return render_template("livestocks/404.html")
     trader = live.traders
@@ -457,6 +507,45 @@ def edit_livestock(ids):
         return render_template("livestocks/edit.html", live=live, trader=trader)
     return render_template("livestocks/edit.html", live=live, trader=trader)
 
+@app.route("/livestocks/new", methods=['GET', 'POST'])
+def register_livestock():
+    if not logged_in("admin"):
+        return redirect(url_for("admin_login"))
+    traders = db_session.query(Trader).all()
+    types = db_session.query(Type).all()
+    tag = db_session.query(Livestock).all()
+    if tag is None or len(tag) == 0:
+        tag = 1
+    else:
+        tag = tag[-1].id + 1
+    return render_template("livestocks/new.html", traders=traders, types=types, tag=tag)
+@app.route("/categories")
+def categories():
+    if not logged_in("admin"):
+        return redirect(url_for("admin_login"))
+    types = db_session.query(Type).all()
+    return render_template("admin/categories.html", types=types)
+
+@app.route("/categories/new", methods=['GET', 'POST'])
+def category_create():
+    if not logged_in("admin"):
+        return redirect(url_for("admin_login"))
+    if request.method == "POST":
+        name = request.form['title'].strip()
+        if name == "":
+            error = "Please specify the name of category"
+            return render_template("admin/new_category.html", error=error)
+        try:
+            types = Type(name)
+            db_session.add(types)
+            db_session.commit()
+            return redirect(url_for("categories"))
+        except Exception as ex:
+            db_session.rollback()
+            error = "There was a problem saving changes try again later"
+            return render_template("admin/new_category.html", error=error)
+
+    return render_template("admin/new_category.html")
 
 @app.route("/livestocks/<int:ids>/delete", methods=["POST", "GET"])
 def delete_livestock(ids):
@@ -470,7 +559,7 @@ def livestock_photoupload(ids):
 
 @app.route("/livestocks")
 def livestock_index():
-    if not logged():
+    if not logged_in("admin"):
         return redirect(url_for("index"))
     livestocks = db_session.query(Livestock).all()
     return render_template("livestocks/index.html", livestocks=livestocks)
@@ -481,7 +570,8 @@ def livestock_index():
 def medications(ids):
     if not logged():
         return redirect(url_for("index"))
-    animal = db_session.query(Livestock).filter(Livestock.id == ids).one_or_none()
+    animal = db_session.query(Livestock).filter(
+        Livestock.id == ids).one_or_none()
     if animal is None:
         return render_template("livestocks/404.html")
     medication = animal.medications
@@ -495,6 +585,7 @@ def create_medication(ids):
         return redirect(url_for("vet_login"))
     return render_template("medications/new.html")
 
+
 @app.route("/vet/login", methods=['GET', 'POST'])
 def vet_login():
     if request.method == 'POST':
@@ -503,7 +594,8 @@ def vet_login():
         if username == "" or password == "":
             error = "Please fill in the email and password"
             return render_template("veterinary/login.html", error=error)
-        vet = db_session.query(Veterinary).filter((Veterinary.email == username) | (Veterinary.username == username)).one_or_none()
+        vet = db_session.query(Veterinary).filter((Veterinary.email == username) | (
+            Veterinary.username == username)).one_or_none()
         if vet is None:
             error = "The username or password is incorrect"
             return render_template("veterinary/login.html", error=error)
@@ -514,6 +606,7 @@ def vet_login():
         session['user'] = vet
         return redirect(url_for("vet_home"))
     return render_template("veterinary/login.html")
+
 
 @app.route("/livestocks/<int:ids>/medications/<int:ids1>")
 def view_medication(ids, ids1):

@@ -1,0 +1,38 @@
+{% extends "partials/main.html" %}
+{% block content %}
+{% include "partials/admin_logged_in.html" %}
+ <div class="col-md-5 col-md-offset-3">
+     <form method="post">
+         <h2 class="text-center">Register assets</h2>
+         <br><br>
+         <div class="col-md-12 bg-primary">
+            <em>Tag No:</em><h1>{{ tag }}</h1>
+         </div>
+         <div class="clearfix"></div>
+         <br>
+         <br>
+         <select class="form-control" name="trader">
+             <option value="">Select Owner</option>
+             {% for trader in traders %}
+                <option value="{{trader.id}}">{{trader.id_pass}} - {{trader.name}}</option>
+             {% endfor %}
+         </select>
+         <br>
+         <select class="form-control" name="type">
+             <option value="">Select Category</option>
+             {% for type in types %}
+                <option value="{{type.id}}">{{type.name}}</option>
+             {% endfor %}
+         </select>
+         <br>
+         <select class="form-control" name="gender">
+             <option value="">Select Gender</option>
+             <option value="1">Male</option>
+             <option value="2">Female</option>
+             <option value="3">Unknown</option>
+         </select>
+         <br>
+         <button class="btn btn-success btn-block">Continue to image upload</button>
+     </form>
+ </div>
+{% endblock %}

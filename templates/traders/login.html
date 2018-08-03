@@ -10,11 +10,14 @@
           Trader Login
       </h3>
       <br><br>
+      {% if error %}
+       <p class="alert alert-danger">{{error}}</p>
+      {% endif %}
       <p class="form-group">
-          <input type="text" name="email_username" class="form-control" placeholder="Email/ username" value="{{ request.form['username'] }}">
+          <input type="text" name="email_username" class="form-control" placeholder="Email/ username" value="{{ request.form['email_username'] }}">
       </p>
       <p class="form-group">
-          <input type="password" name="pass" class="form-control" placeholder="Password" value="{{ request.form['password'] }}" >
+          <input type="password" name="pass" class="form-control" placeholder="Password" >
       </p>
       <button type="submit" name="login" value="yes" class="btn btn-primary btn-block">Sign in</button>
       <div class="clearfix"></div>

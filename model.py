@@ -100,6 +100,8 @@ class Type(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(100), unique=True)
     default_image = Column(String(200), unique=True)
+    def __init__(self, title):
+        self.name = title
 
 
 class Livestock(Base):
@@ -111,6 +113,7 @@ class Livestock(Base):
     traders = relationship("Trader")
     diagnosis = relationship("Diagnosis", back_populates="livestocks")
     medications = relationship("Medication", back_populates='livestocks')
+    on_sale = Column(Integer, nullable=False, default=0)
     types = relationship("Type")
     profile_pic = Column(String(120), nullable=False)
 
@@ -179,4 +182,4 @@ def init_db():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
-#init_db()
+# init_db()

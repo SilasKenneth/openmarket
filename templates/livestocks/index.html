@@ -1,0 +1,22 @@
+{% extends "partials/main.html" %}
+{% block content %}
+{% include "partials/admin_logged_in.html" %}
+<style>
+    .container .thumbnail:not(:last-child){
+        margin-right: 20px;
+    }
+</style>
+ <div class="container center-block">
+     <div class="col-md-3 col-md-offset-7">
+         <a href="/categories/new" class="btn btn-primary">New category</a>
+         <a href="/livestocks/new" class="btn btn-primary">Register new</a>
+     </div>
+     <div class="clearfix"></div>
+     <br>
+     {% for i in range(15) %}
+     <div class="thumbnail col-md-3">
+         <h1>{{ (i + 1) ** 2}}</h1>
+     </div>
+     {% endfor %}
+ </div>
+{% endblock %}
