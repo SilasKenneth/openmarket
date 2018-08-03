@@ -554,7 +554,12 @@ def delete_livestock(ids):
 
 @app.route("/livestocks/<int:ids>/photoupload", methods=["GET", "POST"])
 def livestock_photoupload(ids):
-    return render_template("livestocks/photoupload.html")
+    if not logged_in("admin"):
+        return redirect(url_for("admin_login"))
+    which = db_session.query(Livestock).filter(Livestock.id == ids).one_or_none()
+    if which is None:
+        return redirect(url_for("livestock_index"))
+    return render_template("livestocks/photoupload.html", tag=which)
 
 
 @app.route("/livestocks")
