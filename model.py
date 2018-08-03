@@ -147,7 +147,7 @@ class Disease(Base):
     __tablename__ = 'diseases'
     id = Column(Integer, primary_key=True)
     name = Column(String(80), unique=True, nullable=False)
-    effect = Column(REAL, unique=False, default=1.0)
+    effect = Column(String(50), unique=False, default=1.0)
     symptoms = relationship("Symptom", back_populates="diseases")
     # medication_id = Column(Integer, ForeignKey("medications.id"))
     medications = relationship("Medication", back_populates="diseases")

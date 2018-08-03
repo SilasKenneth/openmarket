@@ -551,6 +551,17 @@ def category_create():
 def delete_livestock(ids):
     return render_template("livestocks/delete.html")
 
+@app.route("/diseases/new", methods=['GET', 'POST'])
+def new_disease():
+    if not logged_in("admin"):
+        return redirect(url_for("admin_login"))
+    return render_template("diseases/add.html")
+@app.route("/diseases")
+def disease_index():
+    if not logged_in("admin"):
+        return redirect(url_for("admin_login"))
+    diseases = db_session.query(Disease).all()
+    return render_template("diseases/index.html", diseases=diseases)
 
 @app.route("/livestocks/<int:ids>/photoupload", methods=["GET", "POST"])
 def livestock_photoupload(ids):

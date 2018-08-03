@@ -1,0 +1,39 @@
+{% extends "partials/main.html" %}
+{% block title %}
+
+{% endblock %}
+
+{% block content %}
+   {% include "partials/admin_logged_in.html" %}
+<style>
+    div#background{
+        overflow: hidden;
+        background: #fff;
+    }
+</style>
+<div id="background">
+    <div class="col-md-8 col-md-offset-2">
+        <div class="col-md-4 col-md-offset-8">
+            <a class="btn btn-primary" href="/diseases/new">Register disease</a>
+        </div>
+        <div class="clearfix"></div>
+        <br><br>
+        <div class="col-md-12">
+            <table class="table table-responsive table-no-bordered">
+                <thead>
+                <th>Disease Name</th>
+                <th>Effect</th>
+                <th>Description</th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Yellow Fever</td>
+                    <td>Severe</td>
+                    <td>Just dont know what it takes</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
