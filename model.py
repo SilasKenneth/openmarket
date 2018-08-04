@@ -83,11 +83,13 @@ class Appointment(Base):
     vet = Column(Integer, nullable=False)
     date = Column(DateTime, default=datetime.date, nullable=False)
     urgency = Column(Integer, default=1, nullable=False)
-
-    def __init__(self, appointee, vet, urgency):
+    notes = Column(String(300), default="No notes available", nullable=False)
+    def __init__(self, appointee, vet, urgency, notes=None):
         self.appointee = appointee
         self.vet = vet
         self.urgency = urgency
+        if notes is not None:
+            self.notes = notes
 class Trader(Base):
     __tablename__ = 'traders'
     id = Column(Integer, primary_key=True)
