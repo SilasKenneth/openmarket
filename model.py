@@ -76,7 +76,18 @@ class Veterinary(Base):
             "status": self.status,
             "email": self.email
         }
+class Appointment(Base):
+    __tablename__ = "appointments"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    appointee = Column(Integer, nullable=False)
+    vet = Column(Integer, nullable=False)
+    date = Column(DateTime, default=datetime.date, nullable=False)
+    urgency = Column(Integer, default=1, nullable=False)
 
+    def __init__(self, appointee, vet, urgency):
+        self.appointee = appointee
+        self.vet = vet
+        self.urgency = urgency
 class Trader(Base):
     __tablename__ = 'traders'
     id = Column(Integer, primary_key=True)
@@ -159,12 +170,14 @@ class Disease(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(80), unique=True, nullable=False)
     effect = Column(String(50), unique=False, default=1.0)
+    description = Column(String(250), nullable=False, default="Not description")
     symptoms = relationship("Symptom", back_populates="diseases")
     # medication_id = Column(Integer, ForeignKey("medications.id"))
     medications = relationship("Medication", back_populates="diseases")
-    def __init__(self, name=None, effect=None):
+    def __init__(self, name=None, effect=None, description=None):
         self.effect = effect
         self.name = name
+        self.description = description
 
 
 class Medication(Base):
@@ -205,4 +218,4 @@ def init_db():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
 
-# init_db()
+init_db()
