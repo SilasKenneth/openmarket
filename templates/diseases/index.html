@@ -21,16 +21,20 @@
         <div class="col-md-12">
             <table class="table table-responsive table-no-bordered">
                 <thead>
+                <th>#</th>
                 <th>Disease Name</th>
                 <th>Effect</th>
                 <th>Description</th>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>Yellow Fever</td>
-                    <td>Severe</td>
-                    <td>Just dont know what it takes</td>
-                </tr>
+                {% for disease in diseases %}
+                    <tr>
+                        <td>{{ disease.id }}</td>
+                        <td>{{ disease.name }}</td>
+                        <td><span class="label label-{{1|danger}}">{{disease.effect|severe}}</span></td>
+                        <td>{{ disease.description }}</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
