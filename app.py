@@ -44,13 +44,24 @@ The date format function
 
 
 def format_datetime(value):
+    suff = ["th", 'st', "nd", "rd", "th", "th", "th", "th", "th", "th"]
     months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    return str(value.day) + "," + str(months[value.month - 1]) + " " + str(value.year)
+    return str(value.day) + suff[value.day % 10] + ", " + str(months[value.month - 1]) + " " + str(value.year)
 
-
+def severe(level):
+    levels = ['Very Severe', 'Severe', 'Mild', 'Not dangerous']
+    return levels[level - 1]
+def danger_class(level):
+    levels = ['danger', 'warning', 'info', 'success']
+    return levels[level - 1]
+def urgency(level):
+    levels = ['Very urgent', 'Urgent', 'Not urgent']
+    return levels[level - 1]
 app.jinja_env.filters['datetime'] = format_datetime
-
+app.jinja_env.filters['severe'] = severe
+app.jinja_env.filters['danger'] = danger_class
+app.jinja_env.filters['urgent'] = urgency
 """
  Make flask recognize routes with trailing slashes and ones with none as the same
  for example /login and /login/ should be the same
@@ -605,8 +616,8 @@ def create_medication(ids):
 def vet_home():
     if not logged_in("vet"):
         return redirect(url_for("vet_login"))
-    print(session['user'])
-    return render_template("veterinary/index.html")
+    currdate = datetime.datetime.utcnow()
+    return render_template("veterinary/index.html", date=currdate)
 
 @app.route("/vet/login", methods=['GET', 'POST'])
 def vet_login():
@@ -637,6 +648,26 @@ def view_medication(ids, ids1):
     if not logged():
         return redirect(url_for("index"))
     return render_template("medications/view.html")
+@app.route("/medication/new", methods=['POST', 'GET'])
+def register_medication():
+    if not logged_in("vet"):
+        return redirect(url_for("vet_login"))
+    if request.method == 'POST':
+        tagno = request.form['tag'].strip()
+        if tagno == "":
+            error = "Input a tag number"
+            return render_template("medications/new.html", error=error)
+        live = db_session.query(Livestock).filter(Livestock.tag == tagno).one_or_none()
+        if live is None:
+            error = "The tag number was not found input a valid one"
+            return render_template("medications/new.html", error=error)
+        return redirect(url_for("register_medication_2", ids=live.tag))
+    return render_template("medications/new.html")
+@app.route("/medications/new/<int:ids>")
+def register_medication_2(ids):
+    if not logged_in("vet"):
+        return redirect(url_for("vet_login"))
+    return render_template("medications/new.html")
 
 if __name__ == "__main__":
     app.run(host="localhost", port=3000, debug=True)
