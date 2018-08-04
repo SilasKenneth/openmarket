@@ -1,8 +1,88 @@
 {% extends "partials/main.html" %}
-{% block title %}
-
-{% endblock %}
-
 {% block content %}
-   {% include "partials/vet_logged_in.html" %}
+{% include "partials/vet_logged_in.html" %}
+<style>
+    .just-white{
+        background: #fff;
+        overflow: hidden;
+    }
+    .tab-pane{
+        padding: 20px;
+    }
+    .thumbnail{
+        margin-right:10px;
+    }
+    #market .row:first-child, #mine .row:first-child{
+        margin-left:20px;
+    }
+    .tlabel{
+        margin-top: -4px;
+    }
+</style>
+
+<div class="col-md-8 col-md-offset-2">
+<div class="just-white">
+    <div class="container">
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="active"><a href="#market" role="tab" data-toggle="tab"><i class="fa fa-cogs"></i> Control Panel</a></li>
+          <li><a href="#mine" role="tab" data-toggle="tab"><i class="fa fa-tasks"></i> Appointments</a></li>
+        </ul>
+    </div>
+    <!-- Tab panes -->
+    <div class="row">
+    <div class="tab-content">
+      <div class="tab-pane active" id="market">
+          <div class="row">
+             <div class="container">
+               <div class="row">
+                 <div class="col-md-7 col-md-offset-0 form-center">
+                     <div class="row">
+                       <div class="col-md-6">
+                           <a href="/diagnosis/new" class="btn btn-primary btn-lg thumbnail ds"><span class="fas fa-kiwi-bird fa-3x"></span><br><br/>Register Diagnosis</a>
+                           </div>
+                           <div class="col-md-6">
+                           <a href="/medication/new" class="btn btn-primary btn-lg thumbnail ds" role="button"><span class="fas fa-user-md fa-3x"></span> <br><br/>Register medications</a><br><br>
+                         </div>
+                           <div class="clearfix"></div>
+                     </div>
+                     <div class="clearfix"></div>
+                  <hr>
+              </div>
+         </div>
+      </div>
+          </div>
+      </div>
+
+      <div class="tab-pane" id="mine">
+           <div class="row">
+              <table class="table table-responsive table-striped bg-primary">
+                 <thead>
+                   <th>#</th>
+                   <th>Appointment from</th>
+                   <th>Date</th>
+                   <th>Urgency</th>
+                   <th>Options</th>
+                 </thead>
+                 <tbody>
+                   <tr class="">
+                      <td class="bg-warning text-success">1</td>
+                      <td class="bg-warning text-success">Silas Kenneth</td>
+                      <td class="bg-warning text-success">{{ date | datetime }}</td>
+                       <td class="bg-warning text-success">
+                           <span class="label label-{{1|danger}}">{{1|urgent}}</span>
+                       </td>
+                       <td class="bg-warning text-success">
+                           <a class="btn btn-primary btn-xs"><i class="fa fa-passport"></i> View this</a>
+                           <a class="btn btn-success btn-xs"><i class="fa fa-check"></i> Mark as read</a>
+                       </td>
+                   </tr>
+                 </tbody>
+              </table>
+          </div>
+      </div>
+
+    </div>
+    </div>
+</div>
+</div>
 {% endblock %}
